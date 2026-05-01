@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SISTEMA REWARDS V5.4</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --bg: #0f172a; --card-bg: #1e293b; --white: #ffffff; --primary: #38bdf8;
+            --primary-grad: linear-gradient(135deg, #0ea5e9 0%, #22d3ee 100%);
+            --header-grad: linear-gradient(135deg, #0ea5e9 0%, #22d3ee 100%);
+            --text-main: #f1f5f9; --text-sec: #94a3b8; --border: rgba(255, 255, 255, 0.1);
+            --shadow-3d: 0 10px 25px rgba(0,0,0,0.3);
+            --input-bg: #0f172a;
+            --danger: #ef4444;
+            --success: #4ade80;
+            --gold: #fbbf24;
+        }
+
+        .light-theme {
+            --bg: #f1f5f9; --card-bg: #ffffff; --white: #1e293b; --primary: #0284c7;
+            --primary-grad: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+            --header-grad: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+            --text-main: #0f172a; --text-sec: #64748b; --border: rgba(0, 0, 0, 0.1);
+            --shadow-3d: 0 4px 12px rgba(0,0,0,0.05);
+            --input-bg: #f8fafc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 10px; min-height: 100vh; transition: background 0.3s; scroll-behavior: smooth; }
+
+        header { 
+            margin-bottom: 20px; padding: 15px; background: var(--header-grad); 
+            border-radius: 20px; box-shadow: var(--shadow-3d); display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .header-top { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+        .main-title { font-size: 0.75rem; font-weight: 800; color: #020617; text-transform: uppercase; }
+        
+        .header-stats-container { display: flex; gap: 8px; width: 100%; max-width: 500px; justify-content: center; }
+        .header-stats { flex: 1; text-align: center; background: rgba(0,0,0,0.15); padding: 6px; border-radius: 12px; min-width: 0; }
+        .header-stats label { font-size: 0.5rem; color: #020617; font-weight: 800; display: block; text-transform: uppercase; margin-bottom: 2px; }
+        .header-stats span { font-size: 1.1rem; font-weight: 900; color: #ffffff; display: block; }
+        .stat-redeemed span { color: var(--gold); }
+        .stat-balance span { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2px; margin-top: 2px; }
+
+        .month-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 8px; width: 100%; scrollbar-width: none; }
+        .month-btn { padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer; font-size: 0.75rem; color: var(--text-sec); white-space: nowrap; font-weight: 700; flex-shrink: 0; }
+        .month-btn.active { background: var(--primary-grad); color: #fff; border: none; }
+
+        .week-accordion { background: var(--card-bg); border-radius: 18px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; width: 100%; }
+        .week-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: rgba(255,255,255,0.02); }
+        .week-content { display: none; padding: 10px; flex-direction: column; gap: 10px; }
+        .week-accordion.open .week-content { display: flex; }
+
+        .day-accordion { background: rgba(255,255,255,0.02); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; transition: 0.3s; }
+        .day-header { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: rgba(255,255,255,0.03); }
+        .day-content { display: none; padding: 15px; overflow-x: auto; }
+        .day-accordion.open { border-color: var(--primary); background: rgba(56, 189, 248, 0.05); }
+        .day-accordion.open .day-content { display: block; }
+
+        .main-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; min-width: 300px; }
+        .label-col { width: 90px; font-size: 0.55rem; font-weight: 700; color: var(--text-sec); text-align: left; }
+        
+        .group-bar { width: 100%; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 900; color: white; border-radius: 4px; margin: 5px 0; text-transform: uppercase; }
+
+        .val-input { width: 65px; height: 35px; border: 1px solid var(--border); border-radius: 6px; text-align: center; font-size: 0.9rem; font-weight: 800; outline: none; background: var(--input-bg); color: var(--text-main); }
+        .resgate-input-header { border-color: var(--gold); color: var(--gold) !important; height: 28px; font-size: 0.75rem; margin-top: 4px; }
+        
+        .acc-header-box { display: flex; flex-direction: column; align-items: center; min-width: 70px; position: relative; }
+        .acc-header { font-size: 0.55rem; font-weight: 900; color: white; padding: 4px 2px; border-radius: 4px 4px 0 0; text-transform: uppercase; width: 100%; text-align: center; }
+        .acc-score-display { font-size: 0.6rem; font-weight: 900; color: #fff; background: rgba(0,0,0,0.3); width: 100%; padding: 4px 0; text-align: center; position: relative; }
+        
+        /* ANIMAÇÃO DOS PONTOS */
+        @keyframes floatDelta {
+            0% { opacity: 0; transform: translate(-50%, 0); }
+            20% { opacity: 1; }
+            100% { opacity: 0; transform: translate(-50%, -30px); }
+        }
+        .delta-indicator {
+            position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+            font-size: 0.7rem; font-weight: 800; pointer-events: none;
+            animation: floatDelta 1.5s ease-out forwards; z-index: 999;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .up { color: var(--success); }
+        .down { color: var(--danger); }
+
+        .resgate-badge { 
+            background: var(--gold); color: #000; width: 16px; height: 16px; border-radius: 50%; 
+            font-size: 0.6rem; font-weight: 900; display: none; align-items: center; justify-content: center;
+            position: absolute; top: -5px; right: -5px; cursor: pointer; z-index: 5;
+        }
+
+        .sum-row td { padding-top: 8px; border-top: 1px solid var(--border); font-weight: 800; font-size: 0.6rem; text-align: center; }
+        .sum-label { font-size: 0.5rem; text-transform: uppercase; color: var(--text-sec); text-align: left !important; }
+
+        #adminPanel { position: fixed; top: 0; right: 0; height: 100vh; width: 100%; max-width: 350px; background: var(--card-bg); z-index: 9999; padding: 20px; display: none; border-left: 3px solid var(--primary); overflow-y: auto; }
+
+        @media (min-width: 769px) {
+            .week-content { flex-direction: row; overflow-x: auto; scrollbar-width: thin; }
+            .day-accordion { min-width: 350px; flex-shrink: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <button onclick="toggleTheme()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">🌓</button>
+        <h1 class="main-title">REWARDS V5.4</h1>
+        <button onclick="toggleAdmin()" style="background:rgba(0,0,0,0.1); border:none; padding:8px 12px; border-radius:10px; font-weight:800; font-size:0.6rem; cursor:pointer; color:inherit;">AJUSTES</button>
+    </div>
+    
+    <div class="header-stats-container">
+        <div class="header-stats">
+            <label>Ganhos (Mês)</label>
+            <span id="globalTotal">0</span>
+        </div>
+        <div class="header-stats stat-redeemed">
+            <label>Resgates (Mês)</label>
+            <span id="globalRedeemed">0</span>
+        </div>
+        <div class="header-stats stat-balance">
+            <label>Saldo Real Total</label>
+            <span id="globalActualBalance">0</span>
+        </div>
+    </div>
+    <select id="yearSel" onchange="updateYear(this.value)" style="background:none; border:none; font-weight:800; color:#020617; outline:none; font-size: 0.7rem;"></select>
+</header>
+
+<div class="month-tabs" id="tabsArea"></div>
+<div id="weeksArea"></div>
+
+<div id="adminPanel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="font-size:1rem;">Configurações</h2>
+        <button onclick="closeModal('adminPanel')" style="color:var(--text-main); background:none; border:none; font-size:1.5rem;">✕</button>
+    </div>
+    <div id="accAdmin"></div>
+    <button onclick="tempAddAcc()" style="color:var(--primary); font-size:0.7rem; background:none; border:none; margin:10px 0; font-weight:800;">+ ADICIONAR CONTA</button>
+    <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
+    <div id="grpAdmin"></div>
+    <button onclick="tempAddGroup()" style="color:var(--primary); font-size:0.7rem; background:none; border:none; margin:10px 0; font-weight:800;">+ NOVO GRUPO</button>
+    <button onclick="commitChanges()" style="width:100%; padding:15px; background:var(--primary-grad); border:none; border-radius:12px; color:white; font-weight:800; margin-top:20px; cursor:pointer;">SALVAR ALTERAÇÕES</button>
+    <button style="width:100%; padding:12px; background:none; border:2px solid var(--danger); color:var(--danger); border-radius:12px; font-weight:800; font-size:0.7rem; margin-top:30px;" onclick="handleReset()">RESETAR DADOS</button>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDX1opV6OfrYPJD_07GpDn-5SPvKuuYb5Y",
+        authDomain: "rewards-67b1d.firebaseapp.com",
+        databaseURL: "https://rewards-67b1d-default-rtdb.firebaseio.com",
+        projectId: "rewards-67b1d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const accColors = ['#38bdf8', '#fb7185', '#4ade80', '#fbbf24', '#c084fc', '#f472b6', '#2dd4bf'];
+    const grpGrads = ['linear-gradient(90deg, #3b82f6, #2dd4bf)', 'linear-gradient(90deg, #f43f5e, #fb923c)', 'linear-gradient(90deg, #8b5cf6, #d946ef)'];
+
+    let state = { year: 2026, month: new Date().getMonth(), accounts: [], groups: [], values: {} };
+    let isFirstLoad = true;
+
+    db.ref('enterprise_data').on('value', (snap) => {
+        const data = snap.val();
+        if (!data) { renderStructure(); return; }
+        if (isFirstLoad) { data.year = new Date().getFullYear(); data.month = new Date().getMonth(); isFirstLoad = false; }
+        
+        const area = document.getElementById('weeksArea');
+        const structChanged = JSON.stringify(state.accounts) !== JSON.stringify(data.accounts) || 
+                              JSON.stringify(state.groups) !== JSON.stringify(data.groups) ||
+                              state.month != data.month || state.year != data.year;
+        
+        state = data;
+        if (structChanged || area.innerHTML === "") { renderStructure(); setTimeout(scrollToToday, 500); }
+        else { updateInputsSilently(); }
+        calculateTotals();
+    });
+
+    function scrollToToday() {
+        const todayEl = document.querySelector('.day-accordion.open');
+        if (todayEl) todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function toggleTheme() { document.body.classList.toggle('light-theme'); }
+    function updateYear(v) { db.ref('enterprise_data/year').set(Number(v)); }
+
+    // GATILHO PRINCIPAL: Salva e Anima
+    function commitValue(input) {
+        const key = input.dataset.key;
+        const val = input.value;
+        const oldVal = Number(state.values?.[key]) || 0;
+        const newVal = Number(val) || 0;
+        const delta = newVal - oldVal;
+
+        if (delta !== 0) {
+            const p = key.split('-');
+            const d = p[2];
+            const ai = p[p.length - 1];
+            const displayEl = document.querySelector(`.daily-acc-total-${d}-${ai}`);
+            if (displayEl) triggerAnimation(displayEl, delta);
+        }
+
+        if(!state.values) state.values = {};
+        state.values[key] = val;
+        db.ref(`enterprise_data/values/${key}`).set(val);
+        calculateTotals();
+    }
+
+    function triggerAnimation(target, delta) {
+        const indicator = document.createElement('div');
+        const isUp = delta > 0;
+        indicator.className = `delta-indicator ${isUp ? 'up' : 'down'}`;
+        indicator.innerText = `${isUp ? '↑' : '↓'} ${Math.abs(delta)}`;
+        target.appendChild(indicator);
+        setTimeout(() => indicator.remove(), 1500);
+    }
+
+    function handleNav(e, d) {
+        const inputs = Array.from(document.querySelectorAll(`.inp-d-${d}`));
+        const idx = inputs.indexOf(e.target);
+        const cols = state.accounts.length;
+
+        if (e.key === "Enter") {
+            e.preventDefault();
+            commitValue(e.target); // Salva apenas no Enter
+            const next = inputs[idx + cols] || inputs[idx + 1];
+            if (next) next.focus();
+        }
+        
+        if (e.key === "ArrowRight") inputs[idx + 1]?.focus();
+        if (e.key === "ArrowLeft") inputs[idx - 1]?.focus();
+        if (e.key === "ArrowDown") inputs[idx + cols]?.focus();
+        if (e.key === "ArrowUp") inputs[idx - cols]?.focus();
+    }
+
+    function renderStructure() {
+        const yearSel = document.getElementById('yearSel');
+        yearSel.innerHTML = '';
+        for(let y=2024; y<=2030; y++) yearSel.innerHTML += `<option value="${y}" ${y==state.year?'selected':''}>${y}</option>`;
+
+        const mesesCurto = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+        document.getElementById('tabsArea').innerHTML = mesesCurto.map((m, i) => 
+            `<button class="month-btn ${i==state.month?'active':''}" onclick="db.ref('enterprise_data/month').set(${i})">${m.toUpperCase()}</button>`
+        ).join('');
+
+        const totalDays = new Date(state.year, Number(state.month) + 1, 0).getDate();
+        const startOffset = (new Date(state.year, state.month, 1).getDay() + 6) % 7;
+        const area = document.getElementById('weeksArea');
+        area.innerHTML = '';
+
+        const hj = new Date();
+        const ehMesAtual = hj.getMonth() === Number(state.month) && hj.getFullYear() === Number(state.year);
+
+        let day = 1; let wIdx = 0;
+        while(day <= totalDays) {
+            const wStart = day; const wEnd = Math.min(day + (wIdx === 0 ? 6 - startOffset : 6), totalDays);
+            const isCurrentW = ehMesAtual && hj.getDate() >= wStart && hj.getDate() <= wEnd;
+
+            const acc = document.createElement('div');
+            acc.className = `week-accordion ${isCurrentW ? 'open' : ''}`;
+            acc.innerHTML = `<div class="week-header" onclick="this.parentElement.classList.toggle('open')">
+                <div><p style="font-weight:800; font-size:0.8rem;">Semana ${wIdx+1}</p><p style="font-size:0.5rem; color:var(--text-sec);">${wStart}-${wEnd}</p></div>
+                <div style="text-align:right;"><p style="font-size:0.4rem; color:var(--primary); font-weight:800;">TOTAL GANHOS</p><p style="font-weight:900; font-size:0.8rem;" id="w-sum-${wIdx}">0</p></div>
+            </div><div class="week-content" id="week-content-${wIdx}"></div>`;
+            area.appendChild(acc);
+
+            const content = document.getElementById(`week-content-${wIdx}`);
+            for(let i=0; i<7; i++) {
+                const curD = day + i - (wIdx === 0 ? startOffset : 0);
+                if(curD > 0 && curD <= totalDays) {
+                    const dName = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"][(new Date(state.year, state.month, curD).getDay() + 6) % 7];
+                    const dAcc = document.createElement('div');
+                    const isToday = ehMesAtual && curD == hj.getDate();
+                    dAcc.className = `day-accordion ${isToday ? 'open' : ''}`;
+                    dAcc.innerHTML = `<div class="day-header" onclick="this.parentElement.classList.toggle('open')">
+                        <p style="font-weight:800; font-size:0.7rem;"><span style="color:var(--primary)">${dName}</span> ${curD}</p>
+                        <p style="font-size:0.55rem; color:var(--text-sec);">FEITO: <span class="day-total-${curD}" style="color:var(--white); font-weight:900;">0</span></p>
+                    </div><div class="day-content">${buildTable(curD, wIdx)}</div>`;
+                    content.appendChild(dAcc);
+                }
+            }
+            day += (wIdx === 0 ? 7 - startOffset : 7); wIdx++;
+        }
+        updateInputsSilently();
+    }
+
+    function buildTable(d, wIdx) {
+        let h = `<table class="main-table"><thead><tr><th style="padding-bottom:10px;"></th>`;
+        state.accounts.forEach((a, i) => {
+            const resKey = `${state.year}-${state.month}-${d}-resgate-${i}`;
+            h += `<th><div class="acc-header-box">
+                <div style="position:relative; width:100%;"><div class="acc-header" style="background:${accColors[i % accColors.length]}">${a.name}</div><div class="resgate-badge resgate-badge-${d}-${i}">$</div></div>
+                <div class="acc-score-display daily-acc-total-${d}-${i}">0</div>
+                <input type="text" inputmode="numeric" class="val-input resgate-input-header inp-d-${d}" placeholder="0" data-key="${resKey}" onkeydown="handleNav(event, ${d})">
+            </div></th>`;
+        });
+        h += `</tr></thead><tbody>`;
+        state.groups.forEach((g, gi) => {
+            h += `<tr><td colspan="${state.accounts.length+1}"><div class="group-bar" style="background:${grpGrads[gi%grpGrads.length]}">${g.name}</div></td></tr>`;
+            g.tasks.forEach((t, ti) => {
+                h += `<tr><td class="label-col">${t}</td>`;
+                state.accounts.forEach((acc, ai) => {
+                    const k = `${state.year}-${state.month}-${d}-${g.id}-${ti}-${ai}`;
+                    h += `<td><input type="text" inputmode="numeric" class="val-input inp-d-${d}" data-key="${k}" onkeydown="handleNav(event, ${d})"></td>`;
+                });
+                h += `</tr>`;
+            });
+        });
+        h += `<tr class="sum-row"><td class="sum-label">DIA</td>`;
+        state.accounts.forEach((_, ai) => h += `<td class="sum-${d}-${ai}" style="color:var(--primary)">0</td>`);
+        h += `</tr><tr class="sum-row"><td class="sum-label">SEM.</td>`;
+        state.accounts.forEach((_, ai) => h += `<td class="tw-sum-val-${wIdx}-${ai}" style="color:#c084fc">0</td>`);
+        h += `</tr><tr class="sum-row"><td class="sum-label">MÊS</td>`;
+        state.accounts.forEach((_, ai) => h += `<td class="tm-sum-val-${ai}" style="color:var(--white)">0</td>`);
+        h += `</tr></tbody></table>`;
+        return h;
+    }
+
+    function calculateTotals() {
+        if (!state.accounts || state.accounts.length === 0) return;
+        const ty = Number(state.year); const tm = Number(state.month);
+        const carryBalances = state.accounts.map(acc => Number(acc.initialPoints) || 0);
+        
+        if (state.values) {
+            Object.keys(state.values).forEach(key => {
+                const p = key.split('-'); if (p.length < 3) return;
+                const y = Number(p[0]); const m = Number(p[1]); const ai = Number(p[p.length - 1]);
+                if (y < ty || (y === ty && m < tm)) {
+                    if (key.includes('resgate')) carryBalances[ai] -= Number(state.values[key]) || 0;
+                    else carryBalances[ai] += Number(state.values[key]) || 0;
+                }
+            });
+        }
+
+        const currBalances = [...carryBalances];
+        let gtM = 0; let grM = 0;
+        const mEarn = state.accounts.map(() => 0);
+        const tDays = new Date(ty, tm + 1, 0).getDate();
+        const startO = (new Date(ty, tm, 1).getDay() + 6) % 7;
+
+        for (let d = 1; d <= tDays; d++) {
+            let dgG = 0;
+            state.accounts.forEach((acc, ai) => {
+                let dAccF = 0;
+                state.groups.forEach(g => {
+                    g.tasks.forEach((__, ti) => { dAccF += Number(state.values?.[`${ty}-${tm}-${d}-${g.id}-${ti}-${ai}`]) || 0; });
+                });
+                const rD = Number(state.values?.[`${ty}-${tm}-${d}-resgate-${ai}`]) || 0;
+                currBalances[ai] += (dAccF - rD);
+                
+                const b = document.querySelector(`.resgate-badge-${d}-${ai}`);
+                if(b) b.style.display = rD > 0 ? 'flex' : 'none';
+
+                const sDisp = document.querySelector(`.daily-acc-total-${d}-${ai}`);
+                if(sDisp) sDisp.innerText = Math.round(currBalances[ai]).toLocaleString();
+                const sumD = document.querySelector(`.sum-${d}-${ai}`);
+                if(sumD) sumD.innerText = Math.round(dAccF).toLocaleString();
+
+                mEarn[ai] += dAccF; dgG += dAccF; grM += rD;
+            });
+            const dTotD = document.querySelector(`.day-total-${d}`);
+            if(dTotD) dTotD.innerText = Math.round(dgG).toLocaleString();
+            gtM += dgG;
+        }
+
+        const fAbs = state.accounts.map(acc => Number(acc.initialPoints) || 0);
+        if (state.values) {
+            Object.keys(state.values).forEach(key => {
+                const p = key.split('-'); const ai = Number(p[p.length - 1]);
+                if (key.includes('resgate')) fAbs[ai] -= Number(state.values[key]) || 0;
+                else fAbs[ai] += Number(state.values[key]) || 0;
+            });
+        }
+
+        document.getElementById('globalTotal').innerText = Math.round(gtM).toLocaleString();
+        document.getElementById('globalRedeemed').innerText = Math.round(grM).toLocaleString();
+        document.getElementById('globalActualBalance').innerText = Math.round(fAbs.reduce((a, b) => a + b, 0)).toLocaleString();
+
+        mEarn.forEach((v, i) => { document.querySelectorAll(`.tm-sum-val-${i}`).forEach(el => el.innerText = Math.round(v).toLocaleString()); });
+
+        let dN = 1; let wI = 0;
+        while(dN <= tDays) {
+            const ws = dN; const we = Math.min(dN + (wI === 0 ? 6 - startO : 6), tDays);
+            let wgT = 0;
+            state.accounts.forEach((_, ai) => {
+                let wAccS = 0;
+                for(let wd = ws; wd <= we; wd++) {
+                    state.groups.forEach(g => { g.tasks.forEach((__, ti) => { wAccS += Number(state.values?.[`${ty}-${tm}-${wd}-${g.id}-${ti}-${ai}`]) || 0; }); });
+                }
+                document.querySelectorAll(`.tw-sum-val-${wI}-${ai}`).forEach(el => el.innerText = Math.round(wAccS).toLocaleString());
+                wgT += wAccS;
+            });
+            const el = document.getElementById(`w-sum-${wI}`);
+            if(el) el.innerText = Math.round(wgT).toLocaleString();
+            dN += (wI === 0 ? 7 - startO : 7); wI++;
+        }
+    }
+
+    function updateInputsSilently() {
+        document.querySelectorAll('.val-input').forEach(inp => {
+            const key = inp.dataset.key;
+            if(document.activeElement !== inp) { inp.value = state.values?.[key] || ''; }
+        });
+    }
+
+    function toggleAdmin() { tempState = JSON.parse(JSON.stringify(state)); document.getElementById('adminPanel').style.display='block'; renderAdmin(); }
+    function closeModal(id) { document.getElementById(id).style.display='none'; }
+    
+    function renderAdmin() {
+        document.getElementById('accAdmin').innerHTML = tempState.accounts.map((a, i) => `
+            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--border);">
+                <input class="val-input" value="${a.name}" oninput="tempState.accounts[${i}].name=this.value" style="width:100%; text-align:left; padding:0 10px; margin-bottom:5px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-size:0.6rem; color:var(--primary);">PONTOS INICIAIS:</span><input type="number" class="val-input" value="${a.initialPoints || 0}" oninput="tempState.accounts[${i}].initialPoints=this.value" style="width:100px; height:30px;"></div>
+                <button onclick="tempState.accounts.splice(${i},1); renderAdmin()" style="color:var(--danger); background:none; border:none; font-size:0.6rem; margin-top:5px;">REMOVER</button>
+            </div>
+        `).join('');
+
+        document.getElementById('grpAdmin').innerHTML = tempState.groups.map((g, gi) => `
+            <div style="background:rgba(0,0,0,0.1); padding:10px; border-radius:10px; margin-bottom:10px;">
+                <input value="${g.name}" oninput="tempState.groups[${gi}].name=this.value" style="font-weight:800; color:var(--primary); background:none; border:none; width:100%;">
+                ${g.tasks.map((t, ti) => `<div style="display:flex; margin-top:5px;"><input value="${t}" oninput="tempState.groups[${gi}].tasks[${ti}]=this.value" style="flex:1; font-size:0.7rem; color:white; background:none; border-bottom:1px solid var(--border); padding: 5px;"><button onclick="tempState.groups[${gi}].tasks.splice(${ti},1); renderAdmin()" style="color:red; background:none; border:none; padding:5px;">✕</button></div>`).join('')}
+                <button onclick="tempState.groups[${gi}].tasks.push(''); renderAdmin()" style="font-size:0.5rem; color:var(--text-sec); border:none; background:none; margin-top:5px;">+ TAREFA</button>
+            </div>
+        `).join('');
+    }
+
+    function tempAddAcc() { tempState.accounts.push({name: "Conta", initialPoints: 0}); renderAdmin(); }
+    function tempAddGroup() { tempState.groups.push({id: Date.now(), name: "Grupo", tasks: [""]}); renderAdmin(); }
+    function commitChanges() { db.ref('enterprise_data').set(tempState).then(()=>closeModal('adminPanel')); }
+
+    function handleReset() {
+        const rT = prompt("Digite 1: APAGAR TUDO\nDigite 2: APAGAR VALORES");
+        if (rT === "1" && confirm("Apagar tudo?")) db.ref('enterprise_data').set({year: 2026, month: new Date().getMonth(), accounts: [], groups: [], values: {}});
+        else if (rT === "2" && confirm("Zerar valores?")) db.ref('enterprise_data/values').remove();
+    }
+</script>
+</body>
+</html>
