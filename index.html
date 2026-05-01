@@ -75,7 +75,6 @@
         .acc-header { font-size: 0.55rem; font-weight: 900; color: white; padding: 4px 2px; border-radius: 4px 4px 0 0; text-transform: uppercase; width: 100%; text-align: center; }
         .acc-score-display { font-size: 0.6rem; font-weight: 900; color: #fff; background: rgba(0,0,0,0.3); width: 100%; padding: 4px 0; text-align: center; position: relative; }
         
-        /* ANIMAÇÃO DOS PONTOS */
         @keyframes floatDelta {
             0% { opacity: 0; transform: translate(-50%, 0); }
             20% { opacity: 1; }
@@ -190,7 +189,6 @@
     function toggleTheme() { document.body.classList.toggle('light-theme'); }
     function updateYear(v) { db.ref('enterprise_data/year').set(Number(v)); }
 
-    // GATILHO PRINCIPAL: Salva e Anima
     function commitValue(input) {
         const key = input.dataset.key;
         const val = input.value;
@@ -204,12 +202,12 @@
             const ai = p[p.length - 1];
             const displayEl = document.querySelector(`.daily-acc-total-${d}-${ai}`);
             if (displayEl) triggerAnimation(displayEl, delta);
+            
+            if(!state.values) state.values = {};
+            state.values[key] = val;
+            db.ref(`enterprise_data/values/${key}`).set(val);
+            calculateTotals();
         }
-
-        if(!state.values) state.values = {};
-        state.values[key] = val;
-        db.ref(`enterprise_data/values/${key}`).set(val);
-        calculateTotals();
     }
 
     function triggerAnimation(target, delta) {
@@ -228,7 +226,6 @@
 
         if (e.key === "Enter") {
             e.preventDefault();
-            commitValue(e.target); // Salva apenas no Enter
             const next = inputs[idx + cols] || inputs[idx + 1];
             if (next) next.focus();
         }
@@ -297,7 +294,7 @@
             h += `<th><div class="acc-header-box">
                 <div style="position:relative; width:100%;"><div class="acc-header" style="background:${accColors[i % accColors.length]}">${a.name}</div><div class="resgate-badge resgate-badge-${d}-${i}">$</div></div>
                 <div class="acc-score-display daily-acc-total-${d}-${i}">0</div>
-                <input type="text" inputmode="numeric" class="val-input resgate-input-header inp-d-${d}" placeholder="0" data-key="${resKey}" onkeydown="handleNav(event, ${d})">
+                <input type="text" inputmode="numeric" class="val-input resgate-input-header inp-d-${d}" placeholder="0" data-key="${resKey}" onkeydown="handleNav(event, ${d})" onblur="commitValue(this)">
             </div></th>`;
         });
         h += `</tr></thead><tbody>`;
@@ -307,7 +304,7 @@
                 h += `<tr><td class="label-col">${t}</td>`;
                 state.accounts.forEach((acc, ai) => {
                     const k = `${state.year}-${state.month}-${d}-${g.id}-${ti}-${ai}`;
-                    h += `<td><input type="text" inputmode="numeric" class="val-input inp-d-${d}" data-key="${k}" onkeydown="handleNav(event, ${d})"></td>`;
+                    h += `<td><input type="text" inputmode="numeric" class="val-input inp-d-${d}" data-key="${k}" onkeydown="handleNav(event, ${d})" onblur="commitValue(this)"></td>`;
                 });
                 h += `</tr>`;
             });
