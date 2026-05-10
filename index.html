@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SISTEMA REWARDS V7.0 - SECURITY</title>
+    <title>SISTEMA REWARDS V7.1 - SECURITY + FIXED</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -42,7 +42,6 @@
             box-shadow: var(--shadow-3d); width: 100%; max-width: 350px; text-align: center;
         }
 
-        /* CABEÇALHO E APP (Escondidos antes do login) */
         #mainApp { display: none; }
 
         header { 
@@ -97,10 +96,9 @@
 </head>
 <body>
 
-<!-- TELA DE ACESSO -->
 <div id="loginOverlay">
     <div class="login-card">
-        <h1 style="font-size: 1.2rem; margin-bottom: 10px;">REWARDS V7.0</h1>
+        <h1 style="font-size: 1.2rem; margin-bottom: 10px;">REWARDS V7.1</h1>
         <p style="font-size: 0.7rem; color: var(--text-sec); margin-bottom: 20px;">Insira sua senha de acesso</p>
         <input type="password" id="passInput" class="val-input" style="width: 100%; height: 45px; margin-bottom: 15px;" placeholder="****" onkeydown="if(event.key==='Enter') checkPass()">
         <button onclick="checkPass()" style="width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--primary-grad); color: white; font-weight: 800; cursor: pointer;">ENTRAR</button>
@@ -108,13 +106,13 @@
     </div>
 </div>
 
-<!-- APP PRINCIPAL -->
 <div id="mainApp">
     <header>
         <div class="header-top">
             <button onclick="toggleTheme()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">🌓</button>
-            <h1 class="main-title">REWARDS V7.0</h1>
-            <div style="display:flex; gap:10px;">
+            <h1 class="main-title">REWARDS V7.1</h1>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <select id="yearSel" onchange="updateYear(this.value)" style="background:none; border:none; font-weight:800; color:#020617; outline:none; font-size: 0.7rem;"></select>
                 <button onclick="logout()" style="background:rgba(255,255,255,0.1); border:none; padding:8px; border-radius:10px; color:inherit; font-size:0.6rem; font-weight:800;">SAIR</button>
                 <button onclick="toggleAdmin()" style="background:rgba(0,0,0,0.1); border:none; padding:8px 12px; border-radius:10px; font-weight:800; font-size:0.6rem; cursor:pointer; color:inherit;">AJUSTES</button>
             </div>
@@ -138,20 +136,16 @@
         <h2 style="font-size:1rem;">Configurações</h2>
         <button onclick="closeModal('adminPanel')" style="color:var(--text-main); background:none; border:none; font-size:1.5rem;">✕</button>
     </div>
-
-    <!-- MUDAR SENHA -->
     <div style="background: rgba(56, 189, 248, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--primary);">
         <label style="font-size:0.6rem; font-weight:800; color:var(--primary); display:block; margin-bottom:5px;">NOVA SENHA DE ACESSO</label>
         <input type="text" class="val-input" id="newPass" style="width:100%; text-align:left; padding:0 10px;" oninput="tempState.password=this.value">
     </div>
-
     <div id="accAdmin"></div>
     <button onclick="tempAddAcc()" style="color:var(--primary); font-size:0.7rem; background:none; border:none; margin:10px 0; font-weight:800;">+ ADICIONAR CONTA</button>
     <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
     <div id="grpAdmin"></div>
     <button onclick="tempAddGroup()" style="color:var(--primary); font-size:0.7rem; background:none; border:none; margin:10px 0; font-weight:800;">+ NOVO GRUPO</button>
     <button onclick="commitChanges()" style="width:100%; padding:15px; background:var(--primary-grad); border:none; border-radius:12px; color:white; font-weight:800; margin-top:20px; cursor:pointer;">SALVAR ALTERAÇÕES</button>
-    
     <div style="margin-top:40px; border-top:1px solid var(--danger); padding-top:15px;">
         <button onclick="handleReset(1)" style="width:100%; padding:10px; background:none; border:1px solid var(--danger); color:var(--danger); border-radius:8px; font-weight:800; font-size:0.6rem; margin-bottom:10px;">ZERAR PONTOS</button>
         <button onclick="handleReset(2)" style="width:100%; padding:10px; background:var(--danger); border:none; color:white; border-radius:8px; font-weight:800; font-size:0.6rem;">RESET TOTAL</button>
@@ -171,17 +165,17 @@
     const accColors = ['#38bdf8', '#fb7185', '#4ade80', '#fbbf24', '#c084fc', '#f472b6', '#2dd4bf'];
     const grpGrads = ['linear-gradient(90deg, #3b82f6, #2dd4bf)', 'linear-gradient(90deg, #f43f5e, #fb923c)', 'linear-gradient(90deg, #8b5cf6, #d946ef)'];
 
-    let state = { year: 2026, month: new Date().getMonth(), accounts: [], groups: [], values: {}, password: '123' };
+    let state = { year: new Date().getFullYear(), month: new Date().getMonth(), accounts: [], groups: [], values: {}, password: '123' };
     let isFirstLoad = true;
 
-    // Lógica de Autenticação
     function checkPass() {
         const input = document.getElementById('passInput').value;
         if (input === state.password) {
             localStorage.setItem('rewards_auth', 'true');
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            if(isFirstLoad) renderStructure();
+            renderStructure();
+            calculateTotals();
         } else {
             document.getElementById('loginError').style.display = 'block';
         }
@@ -192,74 +186,77 @@
         location.reload();
     }
 
+    function updateYear(v) {
+        db.ref('enterprise_data/year').set(Number(v));
+    }
+
     db.ref('enterprise_data').on('value', (snap) => {
         const data = snap.val();
         if (!data) return;
         
-        state = data;
-        if (!state.password) state.password = '123'; // Senha padrão caso não exista
+        // Se for o primeiro load e houver dados de ano/mês no Firebase, usamos eles
+        if (isFirstLoad) {
+            state = data;
+            isFirstLoad = false;
+        } else {
+            state = data;
+        }
 
         if (localStorage.getItem('rewards_auth') === 'true') {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            
-            if (isFirstLoad) { 
-                state.year = new Date().getFullYear(); 
-                state.month = new Date().getMonth(); 
-                renderStructure();
-                setTimeout(scrollToToday, 800);
-                isFirstLoad = false;
-            }
+            renderStructure();
             calculateTotals();
         }
     });
 
-    function scrollToToday() {
-        const todayEl = document.querySelector('.day-accordion.open');
-        if (todayEl) todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    function toggleTheme() { document.body.classList.toggle('light-theme'); }
-
-    function handleNav(e, d) {
-        const inputs = Array.from(document.querySelectorAll(`.inp-d-${d}`));
-        const idx = inputs.indexOf(e.target);
-        const cols = (state.accounts || []).length;
-        if (e.key === "Enter") { e.preventDefault(); const next = inputs[idx + cols] || inputs[idx + 1]; if (next) next.focus(); }
-        if (e.key === "ArrowRight") inputs[idx + 1]?.focus();
-        if (e.key === "ArrowLeft") inputs[idx - 1]?.focus();
-        if (e.key === "ArrowDown") inputs[idx + cols]?.focus();
-        if (e.key === "ArrowUp") inputs[idx - cols]?.focus();
-    }
-
     function renderStructure() {
+        // Render Year Selector
+        const yearSel = document.getElementById('yearSel');
+        yearSel.innerHTML = '';
+        for(let y=2024; y<=2030; y++) {
+            yearSel.innerHTML += `<option value="${y}" ${y==state.year?'selected':''}>${y}</option>`;
+        }
+
+        // Render Months
         const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-        document.getElementById('tabsArea').innerHTML = meses.map((m, i) => `<button class="month-btn ${i==state.month?'active':''}" onclick="db.ref('enterprise_data/month').set(${i})">${m.toUpperCase()}</button>`).join('');
+        document.getElementById('tabsArea').innerHTML = meses.map((m, i) => 
+            `<button class="month-btn ${i==state.month?'active':''}" onclick="db.ref('enterprise_data/month').set(${i})">${m.toUpperCase()}</button>`
+        ).join('');
+
         const totalDays = new Date(state.year, state.month + 1, 0).getDate();
         const startOffset = (new Date(state.year, state.month, 1).getDay() + 6) % 7;
         const area = document.getElementById('weeksArea');
         area.innerHTML = '';
+
         let day = 1; let wIdx = 0;
         const hj = new Date();
+        const isCurrentMonth = hj.getMonth() === state.month && hj.getFullYear() === state.year;
+
         while(day <= totalDays) {
             const wStart = day; const wEnd = Math.min(day + (wIdx === 0 ? 6 - startOffset : 6), totalDays);
+            const isWeekOpen = isCurrentMonth && hj.getDate() >= wStart && hj.getDate() <= wEnd;
+
             const acc = document.createElement('div');
-            acc.className = `week-accordion ${(hj.getMonth()===state.month && hj.getDate()>=wStart && hj.getDate()<=wEnd) ? 'open' : ''}`;
+            acc.className = `week-accordion ${isWeekOpen ? 'open' : ''}`;
             acc.innerHTML = `<div class="week-header" onclick="this.parentElement.classList.toggle('open')"><div><p style="font-weight:800; font-size:0.8rem;">Semana ${wIdx+1}</p></div><div style="text-align:right;"><p style="font-weight:900; font-size:0.8rem;" id="w-sum-${wIdx}">0</p></div></div><div class="week-content" id="week-content-${wIdx}"></div>`;
             area.appendChild(acc);
+
             const content = document.getElementById(`week-content-${wIdx}`);
             for(let i=0; i<7; i++) {
                 const curD = day + i - (wIdx === 0 ? startOffset : 0);
                 if(curD > 0 && curD <= totalDays) {
                     const dName = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"][(new Date(state.year, state.month, curD).getDay() + 6) % 7];
+                    const isToday = isCurrentMonth && curD === hj.getDate();
                     const dAcc = document.createElement('div');
-                    dAcc.className = `day-accordion ${(hj.getDate()===curD && hj.getMonth()===state.month) ? 'open' : ''}`;
+                    dAcc.className = `day-accordion ${isToday ? 'open' : ''}`;
                     dAcc.innerHTML = `<div class="day-header" onclick="this.parentElement.classList.toggle('open')"><p style="font-weight:800; font-size:0.7rem;"><span style="color:var(--primary)">${dName}</span> ${curD}</p><p style="font-size:0.55rem; color:var(--text-sec);">FEITO: <span class="day-total-${curD}" style="color:var(--white); font-weight:900;">0</span></p></div><div class="day-content">${buildTable(curD, wIdx)}</div>`;
                     content.appendChild(dAcc);
                 }
             }
             day += (wIdx === 0 ? 7 - startOffset : 7); wIdx++;
         }
+        updateInputsSilently();
     }
 
     function buildTable(d, wIdx) {
@@ -312,8 +309,10 @@
                 if(state.groups) state.groups.forEach(g => { if(g.tasks) g.tasks.forEach((_, ti) => { dayAccEarn += Number(state.values?.[`${ty}-${tm}-${d}-${g.id}-${ti}-${ai}`]) || 0; }); });
                 const dayResgate = Number(state.values?.[`${ty}-${tm}-${d}-resgate-${ai}`]) || 0;
                 realBalances[ai] += (dayAccEarn - dayResgate);
-                document.querySelectorAll(`.daily-acc-total-${d}-${ai}`).forEach(e => e.innerText = Math.round(realBalances[ai]).toLocaleString());
-                document.querySelectorAll(`.resgate-badge-${d}-${ai}`).forEach(b => b.style.display = dayResgate > 0 ? 'flex' : 'none');
+                const el = document.querySelectorAll(`.daily-acc-total-${d}-${ai}`);
+                el.forEach(e => e.innerText = Math.round(realBalances[ai]).toLocaleString());
+                const badge = document.querySelectorAll(`.resgate-badge-${d}-${ai}`);
+                badge.forEach(b => b.style.display = dayResgate > 0 ? 'flex' : 'none');
                 gtM += dayAccEarn; grM += dayResgate; dayGlobal += dayAccEarn;
                 const dWeek = Math.floor((d + startO - 1) / 7);
                 if (hj.getMonth() === tm && dWeek === Math.floor((hj.getDate() + startO - 1) / 7)) { weekAccEarn[ai] += dayAccEarn; weekGlobalEarn += dayAccEarn; }
@@ -331,7 +330,8 @@
         document.getElementById('globalActualBalance').innerText = Math.round(globalBalance).toLocaleString();
         document.getElementById('displayMeta').innerText = gMeta.toLocaleString();
         document.getElementById('projMissing').innerText = gFalta.toLocaleString();
-        if (gMedia > 0) { const dt = new Date(); dt.setDate(hj.getDate() + Math.ceil(gFalta/gMedia)); document.getElementById('projDate').innerText = dt.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}); } else document.getElementById('projDate').innerText = "--/--";
+        if (gMedia > 0) { const dt = new Date(); dt.setDate(hj.getDate() + Math.ceil(gFalta/gMedia)); document.getElementById('projDate').innerText = dt.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}); } 
+        else document.getElementById('projDate').innerText = "--/--";
 
         state.accounts.forEach((acc, ai) => {
             const missing = Math.max(0, (Number(acc.goal) || 0) - realBalances[ai]);
@@ -344,6 +344,17 @@
     }
 
     function updateInputsSilently() { document.querySelectorAll('.val-input').forEach(inp => { const key = inp.dataset.key; if(document.activeElement !== inp && key) inp.value = state.values?.[key] || ''; }); }
+
+    function handleNav(e, d) {
+        const inputs = Array.from(document.querySelectorAll(`.inp-d-${d}`));
+        const idx = inputs.indexOf(e.target);
+        const cols = (state.accounts || []).length;
+        if (e.key === "Enter") { e.preventDefault(); const next = inputs[idx + cols] || inputs[idx + 1]; if (next) next.focus(); }
+        if (e.key === "ArrowRight") inputs[idx + 1]?.focus();
+        if (e.key === "ArrowLeft") inputs[idx - 1]?.focus();
+        if (e.key === "ArrowDown") inputs[idx + cols]?.focus();
+        if (e.key === "ArrowUp") inputs[idx - cols]?.focus();
+    }
 
     function commitValue(input) {
         const key = input.dataset.key; const val = input.value; const oldVal = Number(state.values?.[key]) || 0; const newVal = Number(val) || 0;
