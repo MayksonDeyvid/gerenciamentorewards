@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SISTEMA REWARDS V7.1 - SECURITY + FIXED</title>
+    <title>SISTEMA REWARDS V7.2 - AUTO FOCUS</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -29,7 +29,7 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg); color: var(--text-main); padding: 10px; min-height: 100vh; transition: background 0.3s; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 10px; min-height: 100vh; transition: background 0.3s; scroll-behavior: smooth; }
 
         /* TELA DE LOGIN */
         #loginOverlay {
@@ -73,8 +73,7 @@
 
         .main-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; min-width: 300px; }
         .label-col { width: 90px; font-size: 0.55rem; font-weight: 700; color: var(--text-sec); text-align: left; }
-        .group-bar { width: 100%; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 900; color: white; border-radius: 4px; margin: 5px 0; text-transform: uppercase; }
-
+        
         .val-input { width: 65px; height: 35px; border: 1px solid var(--border); border-radius: 6px; text-align: center; font-size: 0.9rem; font-weight: 800; outline: none; background: var(--input-bg); color: var(--text-main); }
         .resgate-input-header { border-color: var(--gold); color: var(--gold) !important; height: 28px; font-size: 0.75rem; margin-top: 4px; }
         
@@ -98,7 +97,7 @@
 
 <div id="loginOverlay">
     <div class="login-card">
-        <h1 style="font-size: 1.2rem; margin-bottom: 10px;">REWARDS V7.1</h1>
+        <h1 style="font-size: 1.2rem; margin-bottom: 10px;">REWARDS V7.2</h1>
         <p style="font-size: 0.7rem; color: var(--text-sec); margin-bottom: 20px;">Insira sua senha de acesso</p>
         <input type="password" id="passInput" class="val-input" style="width: 100%; height: 45px; margin-bottom: 15px;" placeholder="****" onkeydown="if(event.key==='Enter') checkPass()">
         <button onclick="checkPass()" style="width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--primary-grad); color: white; font-weight: 800; cursor: pointer;">ENTRAR</button>
@@ -110,7 +109,7 @@
     <header>
         <div class="header-top">
             <button onclick="toggleTheme()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">🌓</button>
-            <h1 class="main-title">REWARDS V7.1</h1>
+            <h1 class="main-title">REWARDS V7.2</h1>
             <div style="display:flex; gap:10px; align-items:center;">
                 <select id="yearSel" onchange="updateYear(this.value)" style="background:none; border:none; font-weight:800; color:#020617; outline:none; font-size: 0.7rem;"></select>
                 <button onclick="logout()" style="background:rgba(255,255,255,0.1); border:none; padding:8px; border-radius:10px; color:inherit; font-size:0.6rem; font-weight:800;">SAIR</button>
@@ -165,20 +164,33 @@
     const accColors = ['#38bdf8', '#fb7185', '#4ade80', '#fbbf24', '#c084fc', '#f472b6', '#2dd4bf'];
     const grpGrads = ['linear-gradient(90deg, #3b82f6, #2dd4bf)', 'linear-gradient(90deg, #f43f5e, #fb923c)', 'linear-gradient(90deg, #8b5cf6, #d946ef)'];
 
-    let state = { year: new Date().getFullYear(), month: new Date().getMonth(), accounts: [], groups: [], values: {}, password: '123' };
+    // Sempre inicializa com a data ATUAL do dispositivo
+    let state = { 
+        year: new Date().getFullYear(), 
+        month: new Date().getMonth(), 
+        accounts: [], 
+        groups: [], 
+        values: {}, 
+        password: '123' 
+    };
     let isFirstLoad = true;
 
     function checkPass() {
         const input = document.getElementById('passInput').value;
         if (input === state.password) {
             localStorage.setItem('rewards_auth', 'true');
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            renderStructure();
-            calculateTotals();
+            loginSuccess();
         } else {
             document.getElementById('loginError').style.display = 'block';
         }
+    }
+
+    function loginSuccess() {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        renderStructure();
+        calculateTotals();
+        setTimeout(scrollToToday, 1000); // Rolagem após renderização
     }
 
     function logout() {
@@ -194,12 +206,15 @@
         const data = snap.val();
         if (!data) return;
         
-        // Se for o primeiro load e houver dados de ano/mês no Firebase, usamos eles
+        const oldMonth = state.month;
+        const oldYear = state.year;
+
+        state = data;
+        
+        // No primeiro carregamento, forçamos o Hoje independente do que está no Firebase
         if (isFirstLoad) {
-            state = data;
-            isFirstLoad = false;
-        } else {
-            state = data;
+            state.year = new Date().getFullYear();
+            state.month = new Date().getMonth();
         }
 
         if (localStorage.getItem('rewards_auth') === 'true') {
@@ -207,18 +222,29 @@
             document.getElementById('mainApp').style.display = 'block';
             renderStructure();
             calculateTotals();
+            if (isFirstLoad) {
+                setTimeout(scrollToToday, 800);
+                isFirstLoad = false;
+            }
         }
     });
 
+    function scrollToToday() {
+        const todayEl = document.querySelector('.day-accordion.open');
+        if (todayEl) {
+            todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
     function renderStructure() {
-        // Render Year Selector
         const yearSel = document.getElementById('yearSel');
-        yearSel.innerHTML = '';
-        for(let y=2024; y<=2030; y++) {
-            yearSel.innerHTML += `<option value="${y}" ${y==state.year?'selected':''}>${y}</option>`;
+        if(yearSel) {
+            yearSel.innerHTML = '';
+            for(let y=2024; y<=2030; y++) {
+                yearSel.innerHTML += `<option value="${y}" ${y==state.year?'selected':''}>${y}</option>`;
+            }
         }
 
-        // Render Months
         const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
         document.getElementById('tabsArea').innerHTML = meses.map((m, i) => 
             `<button class="month-btn ${i==state.month?'active':''}" onclick="db.ref('enterprise_data/month').set(${i})">${m.toUpperCase()}</button>`
@@ -295,9 +321,9 @@
             Object.keys(state.values).forEach(k => {
                 const p = k.split('-'); if(p.length < 3) return;
                 const ai = Number(p[p.length-1]);
+                const v = Number(state.values[k]) || 0;
                 if (Number(p[0]) < ty || (Number(p[0]) === ty && Number(p[1]) < tm)) {
-                    if (k.includes('resgate')) realBalances[ai] -= Number(state.values[k]) || 0;
-                    else realBalances[ai] += Number(state.values[k]) || 0;
+                    if (k.includes('resgate')) realBalances[ai] -= v; else realBalances[ai] += v;
                 }
             });
         }
@@ -383,10 +409,14 @@
 
     function handleReset(type) {
         if (type === 1) { if(confirm("Zerar pontos?")) db.ref('enterprise_data/values').remove().then(() => location.reload()); }
-        else if (type === 2) { if(confirm("RESET TOTAL?")) db.ref('enterprise_data').set({ year: 2026, month: new Date().getMonth(), accounts: [], groups: [], values: {}, password: '123' }).then(() => location.reload()); }
+        else if (type === 2) { if(confirm("RESET TOTAL?")) db.ref('enterprise_data').set({ year: new Date().getFullYear(), month: new Date().getMonth(), accounts: [], groups: [], values: {}, password: '123' }).then(() => location.reload()); }
     }
 
-    function commitChanges() { tempState.year = state.year; tempState.month = state.month; db.ref('enterprise_data').set(tempState).then(()=>closeModal('adminPanel')); }
+    function commitChanges() { 
+        tempState.year = state.year; tempState.month = state.month; 
+        db.ref('enterprise_data').set(tempState).then(()=>closeModal('adminPanel')); 
+    }
+    
     function tempAddAcc() { if(!tempState.accounts) tempState.accounts = []; tempState.accounts.push({name: "Conta", initialPoints:0, goal:0}); renderAdmin(); }
     function tempAddGroup() { if(!tempState.groups) tempState.groups = []; tempState.groups.push({id: Date.now(), name: "Grupo", tasks: ["Tarefa"]}); renderAdmin(); }
 </script>
