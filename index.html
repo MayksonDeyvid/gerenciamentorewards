@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SISTEMA REWARDS V6.8</title>
+    <title>SISTEMA REWARDS V7.0 - SECURITY</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -29,7 +29,21 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg); color: var(--text-main); padding: 10px; min-height: 100vh; transition: background 0.3s; scroll-behavior: smooth; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 10px; min-height: 100vh; transition: background 0.3s; }
+
+        /* TELA DE LOGIN */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg); z-index: 99999; display: flex; 
+            flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        }
+        .login-card {
+            background: var(--card-bg); padding: 30px; border-radius: 20px; 
+            box-shadow: var(--shadow-3d); width: 100%; max-width: 350px; text-align: center;
+        }
+
+        /* CABEÇALHO E APP (Escondidos antes do login) */
+        #mainApp { display: none; }
 
         header { 
             margin-bottom: 20px; padding: 15px; background: var(--header-grad); 
@@ -38,13 +52,10 @@
         .header-top { width: 100%; display: flex; justify-content: space-between; align-items: center; }
         .main-title { font-size: 0.75rem; font-weight: 800; color: #020617; text-transform: uppercase; }
         
-        .header-stats-container { 
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 600px;
-        }
+        .header-stats-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 600px; }
         .header-stats { text-align: center; background: rgba(0,0,0,0.15); padding: 8px; border-radius: 12px; }
-        .header-stats label { font-size: 0.5rem; color: #020617; font-weight: 800; display: block; text-transform: uppercase; margin-bottom: 2px; }
+        .header-stats label { font-size: 0.5rem; color: #020617; font-weight: 800; display: block; text-transform: uppercase; }
         .header-stats span { font-size: 1.1rem; font-weight: 900; color: #ffffff; display: block; }
-        .stat-redeemed span { color: var(--gold) !important; }
 
         .month-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
         .month-btn { padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer; font-size: 0.75rem; color: var(--text-sec); font-weight: 700; flex-shrink: 0; }
@@ -55,16 +66,14 @@
         .week-content { display: none; padding: 10px; flex-direction: column; gap: 10px; }
         .week-accordion.open .week-content { display: flex; }
 
-        .day-accordion { background: rgba(255,255,255,0.02); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; transition: 0.3s; }
+        .day-accordion { background: rgba(255,255,255,0.02); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; }
         .day-header { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .day-content { display: none; padding: 15px; overflow-x: auto; }
         .day-accordion.open { border-color: var(--primary); background: rgba(56, 189, 248, 0.05); }
         .day-accordion.open .day-content { display: block; }
 
-        /* VOLTA AO TAMANHO ORIGINAL DA TABELA */
         .main-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; min-width: 300px; }
         .label-col { width: 90px; font-size: 0.55rem; font-weight: 700; color: var(--text-sec); text-align: left; }
-        
         .group-bar { width: 100%; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 900; color: white; border-radius: 4px; margin: 5px 0; text-transform: uppercase; }
 
         .val-input { width: 65px; height: 35px; border: 1px solid var(--border); border-radius: 6px; text-align: center; font-size: 0.9rem; font-weight: 800; outline: none; background: var(--input-bg); color: var(--text-main); }
@@ -74,7 +83,6 @@
         .acc-header { font-size: 0.55rem; font-weight: 900; color: white; padding: 4px 2px; border-radius: 4px 4px 0 0; text-transform: uppercase; width: 100%; text-align: center; }
         .acc-score-display { font-size: 0.65rem; font-weight: 900; color: #fff; background: rgba(0,0,0,0.3); width: 100%; padding: 4px 0; text-align: center; }
         
-        /* Metas individuais integradas sem esticar demais */
         .acc-meta-info { width: 100%; background: rgba(0,0,0,0.4); padding: 4px 0; display: flex; flex-direction: column; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); }
         .meta-row { display: flex; justify-content: space-around; width: 100%; gap: 2px; }
         .meta-item { display: flex; flex-direction: column; align-items: center; }
@@ -82,51 +90,68 @@
         .meta-val-mini { font-size: 0.48rem; font-weight: 900; color: var(--white); }
         .m-date { color: var(--success); }
 
-        .delta-indicator { position: absolute; left: 50%; top: 0; transform: translateX(-50%); font-size: 0.75rem; font-weight: 800; pointer-events: none; animation: floatDelta 1.5s ease-out forwards; z-index: 999; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        @keyframes floatDelta { 0% { opacity: 0; transform: translate(-50%, 0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -30px); } }
-
-        .resgate-badge { background: var(--gold); color: #000; width: 16px; height: 16px; border-radius: 50%; font-size: 0.6rem; font-weight: 900; display: none; align-items: center; justify-content: center; position: absolute; top: -5px; right: -5px; z-index: 5; }
-
         #adminPanel { position: fixed; top: 0; right: 0; height: 100vh; width: 100%; max-width: 350px; background: var(--card-bg); z-index: 9999; padding: 20px; display: none; border-left: 3px solid var(--primary); overflow-y: auto; }
 
-        @media (min-width: 769px) { 
-            .week-content { flex-direction: row; overflow-x: auto; } 
-            .day-accordion { min-width: 350px; flex-shrink: 0; } 
-        }
+        @media (min-width: 769px) { .week-content { flex-direction: row; overflow-x: auto; } .day-accordion { min-width: 350px; flex-shrink: 0; } }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="header-top">
-        <button onclick="toggleTheme()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">🌓</button>
-        <h1 class="main-title">REWARDS V6.8</h1>
-        <button onclick="toggleAdmin()" style="background:rgba(0,0,0,0.1); border:none; padding:8px 12px; border-radius:10px; font-weight:800; font-size:0.6rem; cursor:pointer; color:inherit;">AJUSTES</button>
+<!-- TELA DE ACESSO -->
+<div id="loginOverlay">
+    <div class="login-card">
+        <h1 style="font-size: 1.2rem; margin-bottom: 10px;">REWARDS V7.0</h1>
+        <p style="font-size: 0.7rem; color: var(--text-sec); margin-bottom: 20px;">Insira sua senha de acesso</p>
+        <input type="password" id="passInput" class="val-input" style="width: 100%; height: 45px; margin-bottom: 15px;" placeholder="****" onkeydown="if(event.key==='Enter') checkPass()">
+        <button onclick="checkPass()" style="width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--primary-grad); color: white; font-weight: 800; cursor: pointer;">ENTRAR</button>
+        <p id="loginError" style="color: var(--danger); font-size: 0.6rem; margin-top: 10px; display: none;">Senha incorreta!</p>
     </div>
-    <div class="header-stats-container">
-        <div class="header-stats"><label>Ganhos</label><span id="globalTotal">0</span></div>
-        <div class="header-stats stat-redeemed"><label>Resgates</label><span id="globalRedeemed">0</span></div>
-        <div class="header-stats"><label>Saldo Real</label><span id="globalActualBalance">0</span></div>
-        <div class="header-stats"><label>Falta Global</label><span id="projMissing" style="color:var(--danger)">0</span></div>
-        <div class="header-stats"><label>Previsão</label><span id="projDate" style="color:var(--success)">--/--</span></div>
-        <div class="header-stats"><label>Meta Global</label><span id="displayMeta">0</span></div>
-    </div>
-</header>
+</div>
 
-<div class="month-tabs" id="tabsArea"></div>
-<div id="weeksArea"></div>
+<!-- APP PRINCIPAL -->
+<div id="mainApp">
+    <header>
+        <div class="header-top">
+            <button onclick="toggleTheme()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">🌓</button>
+            <h1 class="main-title">REWARDS V7.0</h1>
+            <div style="display:flex; gap:10px;">
+                <button onclick="logout()" style="background:rgba(255,255,255,0.1); border:none; padding:8px; border-radius:10px; color:inherit; font-size:0.6rem; font-weight:800;">SAIR</button>
+                <button onclick="toggleAdmin()" style="background:rgba(0,0,0,0.1); border:none; padding:8px 12px; border-radius:10px; font-weight:800; font-size:0.6rem; cursor:pointer; color:inherit;">AJUSTES</button>
+            </div>
+        </div>
+        <div class="header-stats-container">
+            <div class="header-stats"><label>Ganhos</label><span id="globalTotal">0</span></div>
+            <div class="header-stats" style="border: 1px solid var(--gold)"><label>Resgates</label><span id="globalRedeemed" style="color:var(--gold)">0</span></div>
+            <div class="header-stats"><label>Saldo Real</label><span id="globalActualBalance">0</span></div>
+            <div class="header-stats"><label>Falta Global</label><span id="projMissing" style="color:var(--danger)">0</span></div>
+            <div class="header-stats"><label>Previsão</label><span id="projDate" style="color:var(--success)">--/--</span></div>
+            <div class="header-stats"><label>Meta Global</label><span id="displayMeta">0</span></div>
+        </div>
+    </header>
+
+    <div class="month-tabs" id="tabsArea"></div>
+    <div id="weeksArea"></div>
+</div>
 
 <div id="adminPanel">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h2 style="font-size:1rem;">Configurações</h2>
         <button onclick="closeModal('adminPanel')" style="color:var(--text-main); background:none; border:none; font-size:1.5rem;">✕</button>
     </div>
+
+    <!-- MUDAR SENHA -->
+    <div style="background: rgba(56, 189, 248, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--primary);">
+        <label style="font-size:0.6rem; font-weight:800; color:var(--primary); display:block; margin-bottom:5px;">NOVA SENHA DE ACESSO</label>
+        <input type="text" class="val-input" id="newPass" style="width:100%; text-align:left; padding:0 10px;" oninput="tempState.password=this.value">
+    </div>
+
     <div id="accAdmin"></div>
     <button onclick="tempAddAcc()" style="color:var(--primary); font-size:0.7rem; background:none; border:none; margin:10px 0; font-weight:800;">+ ADICIONAR CONTA</button>
     <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
     <div id="grpAdmin"></div>
     <button onclick="tempAddGroup()" style="color:var(--primary); font-size:0.7rem; background:none; border:none; margin:10px 0; font-weight:800;">+ NOVO GRUPO</button>
     <button onclick="commitChanges()" style="width:100%; padding:15px; background:var(--primary-grad); border:none; border-radius:12px; color:white; font-weight:800; margin-top:20px; cursor:pointer;">SALVAR ALTERAÇÕES</button>
+    
     <div style="margin-top:40px; border-top:1px solid var(--danger); padding-top:15px;">
         <button onclick="handleReset(1)" style="width:100%; padding:10px; background:none; border:1px solid var(--danger); color:var(--danger); border-radius:8px; font-weight:800; font-size:0.6rem; margin-bottom:10px;">ZERAR PONTOS</button>
         <button onclick="handleReset(2)" style="width:100%; padding:10px; background:var(--danger); border:none; color:white; border-radius:8px; font-weight:800; font-size:0.6rem;">RESET TOTAL</button>
@@ -146,26 +171,55 @@
     const accColors = ['#38bdf8', '#fb7185', '#4ade80', '#fbbf24', '#c084fc', '#f472b6', '#2dd4bf'];
     const grpGrads = ['linear-gradient(90deg, #3b82f6, #2dd4bf)', 'linear-gradient(90deg, #f43f5e, #fb923c)', 'linear-gradient(90deg, #8b5cf6, #d946ef)'];
 
-    let state = { year: 2026, month: new Date().getMonth(), accounts: [], groups: [], values: {} };
+    let state = { year: 2026, month: new Date().getMonth(), accounts: [], groups: [], values: {}, password: '123' };
     let isFirstLoad = true;
+
+    // Lógica de Autenticação
+    function checkPass() {
+        const input = document.getElementById('passInput').value;
+        if (input === state.password) {
+            localStorage.setItem('rewards_auth', 'true');
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            if(isFirstLoad) renderStructure();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('rewards_auth');
+        location.reload();
+    }
 
     db.ref('enterprise_data').on('value', (snap) => {
         const data = snap.val();
         if (!data) return;
-        if (isFirstLoad) { data.year = new Date().getFullYear(); data.month = new Date().getMonth(); }
-        const structChanged = JSON.stringify(state.accounts) !== JSON.stringify(data.accounts) || JSON.stringify(state.groups) !== JSON.stringify(data.groups) || state.month != data.month;
+        
         state = data;
-        if (structChanged || document.getElementById('weeksArea').innerHTML === "") { 
-            renderStructure(); 
-            if(isFirstLoad) { setTimeout(scrollToToday, 800); isFirstLoad = false; }
-        } else { updateInputsSilently(); }
-        calculateTotals();
+        if (!state.password) state.password = '123'; // Senha padrão caso não exista
+
+        if (localStorage.getItem('rewards_auth') === 'true') {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            
+            if (isFirstLoad) { 
+                state.year = new Date().getFullYear(); 
+                state.month = new Date().getMonth(); 
+                renderStructure();
+                setTimeout(scrollToToday, 800);
+                isFirstLoad = false;
+            }
+            calculateTotals();
+        }
     });
 
     function scrollToToday() {
         const todayEl = document.querySelector('.day-accordion.open');
         if (todayEl) todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    function toggleTheme() { document.body.classList.toggle('light-theme'); }
 
     function handleNav(e, d) {
         const inputs = Array.from(document.querySelectorAll(`.inp-d-${d}`));
@@ -287,35 +341,9 @@
             document.querySelectorAll(`.ind-missing-${hj.getDate()}-${ai}`).forEach(el => el.innerText = Math.round(missing).toLocaleString());
             document.querySelectorAll(`.ind-date-${hj.getDate()}-${ai}`).forEach(el => el.innerText = dStr);
         });
-
-        // Totais semanais
-        let dN = 1; let wI = 0;
-        while(dN <= tDays) {
-            const ws = dN; const we = Math.min(dN + (wI === 0 ? 6 - startO : 6), tDays);
-            let wgT = 0;
-            for(let wd = ws; wd <= we; wd++) {
-                state.accounts.forEach((_, ai) => {
-                    if(state.groups) state.groups.forEach(g => { if(g.tasks) g.tasks.forEach((__, ti) => { wgT += Number(state.values?.[`${ty}-${tm}-${wd}-${g.id}-${ti}-${ai}`]) || 0; }); });
-                });
-            }
-            const el = document.getElementById(`w-sum-${wI}`);
-            if(el) el.innerText = Math.round(wgT).toLocaleString();
-            dN += (wI === 0 ? 7 - startO : 7); wI++;
-        }
     }
 
     function updateInputsSilently() { document.querySelectorAll('.val-input').forEach(inp => { const key = inp.dataset.key; if(document.activeElement !== inp && key) inp.value = state.values?.[key] || ''; }); }
-
-    let dragIdx = null; let dragType = null; let dragParent = null;
-    function handleDragStart(e, type, idx, parent = null) { dragIdx = idx; dragType = type; dragParent = parent; e.target.classList.add('dragging'); }
-    function handleDragOver(e) { e.preventDefault(); }
-    function handleDrop(e, type, targetIdx, parent = null) {
-        e.preventDefault(); if (dragType !== type || dragParent !== parent) return;
-        if (type === 'acc') { const item = tempState.accounts.splice(dragIdx, 1)[0]; tempState.accounts.splice(targetIdx, 0, item); }
-        else if (type === 'grp') { const item = tempState.groups.splice(dragIdx, 1)[0]; tempState.groups.splice(targetIdx, 0, item); }
-        else if (type === 'task') { const item = tempState.groups[parent].tasks.splice(dragIdx, 1)[0]; tempState.groups[parent].tasks.splice(targetIdx, 0, item); }
-        renderAdmin();
-    }
 
     function commitValue(input) {
         const key = input.dataset.key; const val = input.value; const oldVal = Number(state.values?.[key]) || 0; const newVal = Number(val) || 0;
@@ -338,13 +366,13 @@
     function closeModal(id) { document.getElementById(id).style.display='none'; }
 
     function renderAdmin() {
-        document.getElementById('accAdmin').innerHTML = (tempState.accounts || []).map((a, i) => `<div class="admin-item" draggable="true" ondragstart="handleDragStart(event,'acc',${i})" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'acc',${i})"><div style="display:flex; align-items:center;"><span class="drag-handle">☰</span><input class="val-input" value="${a.name}" oninput="tempState.accounts[${i}].name=this.value" style="flex:1; text-align:left; padding:0 10px;"><button onclick="tempState.accounts.splice(${i},1); renderAdmin()" style="color:var(--danger); background:none; border:none; margin-left:10px;">✕</button></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; padding-left:35px;"><input type="number" class="val-input" placeholder="Ini" value="${a.initialPoints||0}" oninput="tempState.accounts[${i}].initialPoints=this.value" style="width:100%"><input type="number" class="val-input" placeholder="Meta" value="${a.goal||0}" oninput="tempState.accounts[${i}].goal=this.value" style="width:100%; border-color:var(--gold)"></div></div>`).join('');
-        document.getElementById('grpAdmin').innerHTML = (tempState.groups || []).map((g, gi) => `<div class="admin-item" style="background:rgba(0,0,0,0.2)" draggable="true" ondragstart="handleDragStart(event,'grp',${gi})" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'grp',${gi})"><div style="display:flex; align-items:center; margin-bottom:10px;"><span class="drag-handle">☰</span><input value="${g.name}" oninput="tempState.groups[${gi}].name=this.value" style="font-weight:800; color:var(--primary); background:none; border:none; flex:1;"></div>${g.tasks ? g.tasks.map((t, ti) => `<div style="display:flex; align-items:center; background:rgba(255,255,255,0.03); margin:4px 0; padding:2px; border-radius:4px;" draggable="true" ondragstart="handleDragStart(event,'task',${ti},${gi})" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'task',${ti},${gi})"><span class="drag-handle" style="font-size:0.8rem">⋮⋮</span><input value="${t}" oninput="tempState.groups[${gi}].tasks[${ti}]=this.value" style="flex:1; background:none; border:none; color:white; font-size:0.7rem;"></div>`).join('') : ''}<button onclick="if(!tempState.groups[${gi}].tasks) tempState.groups[${gi}].tasks=[]; tempState.groups[${gi}].tasks.push(''); renderAdmin()" style="font-size:0.5rem; color:var(--primary); background:none; border:none; margin-top:5px; font-weight:800;">+ TAREFA</button></div>`).join('');
+        document.getElementById('accAdmin').innerHTML = (tempState.accounts || []).map((a, i) => `<div class="admin-item"><div style="display:flex; align-items:center;"><input class="val-input" value="${a.name}" oninput="tempState.accounts[${i}].name=this.value" style="flex:1; text-align:left; padding:0 10px;"><button onclick="tempState.accounts.splice(${i},1); renderAdmin()" style="color:var(--danger); background:none; border:none; margin-left:10px;">✕</button></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; padding-left:10px;"><input type="number" class="val-input" placeholder="Inicial" value="${a.initialPoints||0}" oninput="tempState.accounts[${i}].initialPoints=this.value" style="width:100%"><input type="number" class="val-input" placeholder="Meta" value="${a.goal||0}" oninput="tempState.accounts[${i}].goal=this.value" style="width:100%; border-color:var(--gold)"></div></div>`).join('');
+        document.getElementById('grpAdmin').innerHTML = (tempState.groups || []).map((g, gi) => `<div class="admin-item"><div style="display:flex; align-items:center; margin-bottom:10px;"><input value="${g.name}" oninput="tempState.groups[${gi}].name=this.value" style="font-weight:800; color:var(--primary); background:none; border:none; flex:1;"></div>${g.tasks ? g.tasks.map((t, ti) => `<div style="display:flex; align-items:center; margin:4px 0;"><input value="${t}" oninput="tempState.groups[${gi}].tasks[${ti}]=this.value" style="flex:1; background:none; border:none; color:white; font-size:0.7rem;"></div>`).join('') : ''}<button onclick="if(!tempState.groups[${gi}].tasks) tempState.groups[${gi}].tasks=[]; tempState.groups[${gi}].tasks.push(''); renderAdmin()" style="font-size:0.5rem; color:var(--primary); background:none; border:none; margin-top:5px; font-weight:800;">+ TAREFA</button></div>`).join('');
     }
 
     function handleReset(type) {
         if (type === 1) { if(confirm("Zerar pontos?")) db.ref('enterprise_data/values').remove().then(() => location.reload()); }
-        else if (type === 2) { if(confirm("RESET TOTAL?")) db.ref('enterprise_data').set({ year: 2026, month: new Date().getMonth(), accounts: [], groups: [], values: {} }).then(() => location.reload()); }
+        else if (type === 2) { if(confirm("RESET TOTAL?")) db.ref('enterprise_data').set({ year: 2026, month: new Date().getMonth(), accounts: [], groups: [], values: {}, password: '123' }).then(() => location.reload()); }
     }
 
     function commitChanges() { tempState.year = state.year; tempState.month = state.month; db.ref('enterprise_data').set(tempState).then(()=>closeModal('adminPanel')); }
