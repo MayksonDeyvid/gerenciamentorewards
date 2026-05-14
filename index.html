@@ -22,60 +22,74 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text); padding: 12px; min-height: 100vh; transition: all 0.3s ease; }
 
-        header { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
-        .main-title { font-size: 0.8rem; letter-spacing: 2px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+        header { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 15px; margin-bottom: 20px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .main-title { font-size: 0.75rem; letter-spacing: 2px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .stat-box { text-align: center; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.02); }
-        .stat-box label { display: block; font-size: 0.55rem; text-transform: uppercase; color: var(--text-sec); font-weight: 700; margin-bottom: 5px; }
-        .stat-box span { font-size: 1.1rem; font-weight: 800; display: block; }
-        .stat-percent { border: 1px solid var(--primary); background: rgba(56, 189, 248, 0.05); }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .stat-box { text-align: center; padding: 8px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid transparent; }
+        .stat-box label { display: block; font-size: 0.5rem; text-transform: uppercase; color: var(--text-sec); font-weight: 700; margin-bottom: 3px; }
+        .stat-box span { font-size: 0.85rem; font-weight: 800; display: block; }
+        .stat-highlight { border-color: var(--primary); background: rgba(56, 189, 248, 0.05); }
 
-        .month-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
-        .month-btn { padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); color: var(--text-sec); font-size: 0.7rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .month-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
+        .month-btn { padding: 8px 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text-sec); font-size: 0.65rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
         .month-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
 
         .week-accordion { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; }
-        .week-header { padding: 18px 20px; display: flex; justify-content: space-between; cursor: pointer; align-items: center; font-size: 0.9rem; font-weight: 800; }
+        .week-header { padding: 15px 20px; display: flex; justify-content: space-between; cursor: pointer; align-items: center; font-size: 0.85rem; font-weight: 800; }
         .week-content { display: none; padding: 10px; flex-direction: column; gap: 10px; }
         .week-accordion.open .week-content { display: flex; }
 
-        .day-accordion { border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,0.01); }
-        .day-header { padding: 15px; display: flex; justify-content: space-between; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+        .day-accordion { border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,0.01); margin-bottom: 5px; }
+        .day-header { padding: 12px 15px; display: flex; justify-content: space-between; cursor: pointer; font-size: 0.75rem; font-weight: 700; }
         .day-content { display: none; padding: 10px; overflow-x: auto; }
         .day-accordion.open .day-content { display: block; }
 
-        .main-table { width: 100%; border-collapse: collapse; table-layout: auto; }
-        .label-col { font-size: 0.65rem; color: var(--text-sec); font-weight: 600; padding-right: 20px; text-align: left; white-space: nowrap; }
+        .day-accordion.is-today { border: 2px solid var(--primary); background: rgba(56, 189, 248, 0.08); }
+        .day-accordion.is-today .day-header { color: var(--primary); }
+
+        .main-table { width: 100%; border-collapse: separate; border-spacing: 2px 0; }
+        .label-col { font-size: 0.55rem; color: var(--text-sec); font-weight: 600; padding: 6px 8px; text-align: left; white-space: nowrap; background: var(--card); position: sticky; left: 0; z-index: 2; border-bottom: 1px solid var(--border); }
         
-        /* DASHBOARD INDIVIDUAL DA CONTA */
-        .acc-column-header { padding: 15px; border-bottom: 4px solid var(--acc-color); min-width: 180px; text-align: left; background: rgba(255,255,255,0.02); border-radius: 8px 8px 0 0; }
-        .acc-name { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
-        .acc-balance-large { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 5px; display: block; }
-        .acc-day-gain { font-size: 0.7rem; font-weight: 800; color: var(--primary); margin-bottom: 12px; display: block; }
-        .acc-info-row { display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--text-sec); margin-bottom: 4px; }
-        .acc-info-row b { color: var(--text); font-weight: 700; }
-        .text-danger { color: var(--danger) !important; }
-        .text-success { color: var(--success) !important; }
+        .acc-td { padding: 3px; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .val-input-table { width: 100%; height: 32px; background: rgba(255,255,255,0.05); border: 1px solid transparent; border-radius: 4px; color: var(--text); text-align: center; font-size: 0.8rem; font-weight: 800; outline: none; transition: 0.2s; }
 
-        .val-input { width: 100%; height: 42px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); text-align: center; font-size: 1.1rem; font-weight: 700; outline: none; transition: 0.2s; margin-top: 5px; }
-        .val-input:focus { border-color: var(--acc-color) !important; box-shadow: 0 0 15px rgba(var(--acc-color-rgb), 0.3); background: var(--card); }
+        .acc-column-header { padding: 12px; border-bottom: 4px solid var(--acc-color); min-width: 170px; background: rgba(255,255,255,0.03); border-radius: 10px 10px 0 0; }
+        .acc-name { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; color: var(--acc-color); }
+        .acc-balance-total { font-size: 1.3rem; font-weight: 800; color: #fff; display: block; margin-bottom: 8px; }
+        
+        .resgate-input-header { width: 100%; height: 30px; background: rgba(0,0,0,0.3); border: 1px dashed var(--acc-color); border-radius: 6px; color: var(--gold); font-size: 0.75rem; font-weight: 800; text-align: center; margin-bottom: 10px; outline: none; }
 
-        .group-bar { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--primary); padding: 25px 0 10px 0; border-bottom: 1px solid var(--border); letter-spacing: 1px; }
+        .acc-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; pointer-events: none; }
+        .acc-stat-item label { font-size: 0.45rem; font-weight: 700; color: var(--text-sec); text-transform: uppercase; }
+        .acc-stat-item span { font-size: 0.65rem; font-weight: 800; }
 
-        #adminPanel { position: fixed; top: 0; right: 0; height: 100vh; width: 100%; max-width: 400px; background: var(--card); z-index: 9999; padding: 30px; display: none; border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
+        .group-bar { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; color: var(--primary); padding: 12px 10px 4px 10px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+
+        #adminPanel { position: fixed; right: 0; top: 0; height: 100vh; width: 100%; max-width: 450px; background: var(--card); z-index: 9999; padding: 25px; display: none; border-left: 1px solid var(--border); overflow-y: auto; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
+        .admin-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .admin-section h4 { font-size: 0.8rem; text-transform: uppercase; margin-bottom: 15px; color: var(--primary); }
+        .color-picker { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+        .color-circle { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+        .color-circle.active { border-color: white; transform: scale(1.2); }
+        .task-item { display: flex; gap: 8px; margin-bottom: 5px; }
+
+        .text-up { color: var(--success) !important; }
+        .text-down { color: var(--danger) !important; }
+        .text-primary { color: var(--primary) !important; }
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index: 9998; display:none; }
+
         @media (min-width: 769px) { .week-content { flex-direction: row; overflow-x: auto; } .day-accordion { min-width: 580px; flex-shrink: 0; } }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
-    <div class="login-card" style="text-align: center; background: var(--card); padding: 50px; border-radius: 24px; border: 1px solid var(--border);">
-        <h2 style="margin-bottom: 30px; font-weight: 800; letter-spacing: 2px;">REWARDS V7.2</h2>
-        <input type="password" id="passInput" class="val-input" style="width: 280px;" placeholder="Senha" onkeydown="if(event.key==='Enter') checkPass()">
-        <br>
-        <button onclick="checkPass()" style="width: 280px; padding: 20px; margin-top: 20px; border-radius: 12px; border: none; background: var(--text); color: var(--bg); font-weight: 800; cursor: pointer;">ENTRAR</button>
+    <div class="login-card" style="text-align: center; background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid var(--border); position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10001; width: 300px;">
+        <h2 style="margin-bottom: 25px; font-weight: 800;">REWARDS V7.2</h2>
+        <input type="password" id="passInput" class="val-input-table" style="height:45px; font-size:1.1rem;" placeholder="Senha" onkeydown="if(event.key==='Enter') checkPass()">
+        <button onclick="checkPass()" style="width: 100%; padding: 18px; margin-top: 20px; border-radius: 12px; border: none; background: var(--text); color: var(--bg); font-weight: 800; cursor: pointer;">ENTRAR</button>
     </div>
 </div>
 
@@ -83,20 +97,20 @@
     <header>
         <div class="header-top">
             <span class="main-title">Analytics Rewards System</span>
-            <div style="display:flex; gap:20px;">
-                <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:var(--text); font-size: 1rem;">🌓</button>
-                <button onclick="toggleAdmin()" style="background:none; border:none; cursor:pointer; color:var(--text); font-weight:700; font-size:0.75rem; text-transform:uppercase;">Configurações</button>
-                <button onclick="logout()" style="background:none; border:none; cursor:pointer; color:var(--danger); font-weight:700; font-size:0.75rem; text-transform:uppercase;">Sair</button>
+            <div style="display:flex; gap:12px;">
+                <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:var(--text); font-size: 0.9rem;">🌓</button>
+                <button onclick="toggleAdmin()" style="background:none; border:none; cursor:pointer; color:var(--text); font-weight:700; font-size:0.6rem; text-transform:uppercase;">Config</button>
+                <button onclick="logout()" style="background:none; border:none; cursor:pointer; color:var(--danger); font-weight:700; font-size:0.6rem; text-transform:uppercase;">Sair</button>
             </div>
         </div>
         <div class="stats-grid">
             <div class="stat-box"><label>Ganhos Mês</label><span id="globalTotal">0</span></div>
-            <div class="stat-box"><label>Resgates</label><span id="globalRedeemed" style="color:var(--gold)">0</span></div>
-            <div class="stat-box"><label>Saldo Geral</label><span id="globalActualBalance" style="color:var(--primary)">0</span></div>
-            <div class="stat-box stat-percent"><label>% Meta</label><span id="globalPercent" style="color:var(--primary)">0%</span></div>
-            <div class="stat-box"><label>Faltam</label><span id="projMissing" style="color:var(--danger)">0</span></div>
-            <div class="stat-box"><label>Previsão Global</label><span id="projDate" style="color:var(--success)">--/--</span></div>
+            <div class="stat-box stat-highlight"><label>Saldo Geral</label><span id="globalActualBalance" style="color:var(--primary)">0</span></div>
             <div class="stat-box"><label>Meta Global</label><span id="displayMeta">0</span></div>
+            <div class="stat-box"><label>% Meta</label><span id="globalPercent" style="color:var(--primary)">0%</span></div>
+            <div class="stat-box"><label>Faltam</label><span id="projMissing" style="color:var(--danger)">0</span></div>
+            <div class="stat-box"><label>Previsão</label><span id="projDate" style="color:var(--success)">--/--</span></div>
+            <div class="stat-box"><label>Resgates</label><span id="globalRedeemed" style="color:var(--gold)">0</span></div>
             <div class="stat-box"><label>Ano</label><span>2026</span></div>
         </div>
     </header>
@@ -104,14 +118,27 @@
     <div id="weeksArea"></div>
 </div>
 
+<div class="overlay" id="commonOverlay" onclick="closeAllModals()"></div>
+
 <div id="adminPanel">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-        <h3 style="font-weight: 800;">Ajustes de Sistema</h3>
-        <button onclick="closeModal('adminPanel')" style="background:none; border:none; color:var(--text); font-size: 1.5rem;">✕</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+        <h3 style="font-weight: 800;">Painel Administrativo</h3>
+        <button onclick="closeAllModals()" style="background:none; border:none; color:var(--text); font-size: 1.2rem;">✕</button>
     </div>
-    <div id="accAdmin"></div>
-    <button onclick="tempAddAcc()" style="width:100%; padding:15px; margin-top:20px; border-radius:10px; border:2px dashed var(--border); background:none; color:var(--text-sec); font-weight:700; cursor:pointer;">+ Adicionar Conta</button>
-    <button onclick="commitChanges()" style="width:100%; padding:20px; margin-top:40px; border-radius:14px; border:none; background: var(--primary); color: white; font-weight: 800; cursor: pointer;">SALVAR</button>
+
+    <div class="admin-section">
+        <h4>Contas e Cores</h4>
+        <div id="accAdmin"></div>
+        <button onclick="tempAddAcc()" style="width:100%; padding:12px; margin-top:10px; border-radius:8px; border:2px dashed var(--border); background:none; color:var(--text-sec); font-weight:700; cursor:pointer;">+ Nova Conta</button>
+    </div>
+
+    <div class="admin-section">
+        <h4>Estrutura de Grupos</h4>
+        <div id="groupAdmin"></div>
+        <button onclick="tempAddGroup()" style="width:100%; padding:12px; margin-top:10px; border-radius:8px; border:2px dashed var(--border); background:none; color:var(--text-sec); font-weight:700; cursor:pointer;">+ Novo Grupo</button>
+    </div>
+
+    <button onclick="commitChanges()" style="width:100%; padding:18px; border-radius:12px; border:none; background: var(--primary); color: white; font-weight: 800; cursor: pointer; position: sticky; bottom: 0; box-shadow: 0 -10px 20px rgba(0,0,0,0.5);">SALVAR TUDO NO BANCO</button>
 </div>
 
 <script>
@@ -125,28 +152,34 @@
     const db = firebase.database();
 
     const accColors = [
-        { hex: '#38bdf8', rgb: '56, 189, 248' }, { hex: '#fb7185', rgb: '251, 113, 133' },
-        { hex: '#4ade80', rgb: '74, 222, 128' }, { hex: '#fbbf24', rgb: '251, 191, 36' },
-        { hex: '#c084fc', rgb: '192, 132, 252' }, { hex: '#2dd4bf', rgb: '45, 212, 191' }
+        { hex: '#38bdf8', rgba: 'rgba(56, 189, 248, 0.08)' }, 
+        { hex: '#fb7185', rgba: 'rgba(251, 113, 133, 0.08)' }, 
+        { hex: '#4ade80', rgba: 'rgba(74, 222, 128, 0.08)' }, 
+        { hex: '#fbbf24', rgba: 'rgba(251, 191, 36, 0.08)' }, 
+        { hex: '#c084fc', rgba: 'rgba(192, 132, 252, 0.08)' }, 
+        { hex: '#2dd4bf', rgba: 'rgba(45, 212, 191, 0.08)' },
+        { hex: '#f472b6', rgba: 'rgba(244, 114, 182, 0.08)' },
+        { hex: '#a8a29e', rgba: 'rgba(168, 162, 158, 0.08)' }
     ];
 
-    let state = { year: new Date().getFullYear(), month: new Date().getMonth(), accounts: [], groups: [], values: {}, password: '123' };
+    let state = { year: 2026, month: new Date().getMonth(), accounts: [], groups: [], values: {}, password: '123' };
     let isFirstLoad = true;
 
     function toggleTheme() { document.body.classList.toggle('light-theme'); }
     function checkPass() { if (document.getElementById('passInput').value === state.password) { localStorage.setItem('rewards_auth', 'true'); loginSuccess(); } else { alert('Senha Incorreta'); } }
     function loginSuccess() { document.getElementById('loginOverlay').style.display = 'none'; document.getElementById('mainApp').style.display = 'block'; renderStructure(); }
     function logout() { localStorage.removeItem('rewards_auth'); location.reload(); }
+    function closeAllModals() { document.getElementById('adminPanel').style.display='none'; document.getElementById('commonOverlay').style.display='none'; }
 
     db.ref('enterprise_data').on('value', (snap) => {
         const data = snap.val(); if (!data) return;
-        const structureChanged = JSON.stringify(state.accounts) !== JSON.stringify(data.accounts) || state.month !== data.month;
+        const structureChanged = JSON.stringify(state.accounts) !== JSON.stringify(data.accounts) || JSON.stringify(state.groups) !== JSON.stringify(data.groups) || state.month !== data.month;
         state = data;
         if (localStorage.getItem('rewards_auth') === 'true') {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             if (isFirstLoad || structureChanged) { renderStructure(); isFirstLoad = false; }
-            setTimeout(() => { calculateTotals(); updateInputsSilently(); }, 150);
+            setTimeout(() => { calculateTotals(); updateInputsSilently(); }, 100);
         }
     });
 
@@ -157,23 +190,26 @@
         const startOffset = (new Date(state.year, state.month, 1).getDay() + 6) % 7;
         const area = document.getElementById('weeksArea'); area.innerHTML = '';
         const hj = new Date();
+        
         let day = 1; let wIdx = 0;
         while(day <= totalDays) {
             const wStart = day; const wEnd = Math.min(day + (wIdx === 0 ? 6 - startOffset : 6), totalDays);
-            const isWeekOpen = hj.getFullYear() === state.year && hj.getMonth() === state.month && hj.getDate() >= wStart && hj.getDate() <= wEnd;
+            const isWeekOpen = hj.getMonth() === state.month && hj.getDate() >= wStart && hj.getDate() <= wEnd;
             const acc = document.createElement('div');
             acc.className = `week-accordion ${isWeekOpen ? 'open' : ''}`;
             acc.innerHTML = `<div class="week-header" onclick="this.parentElement.classList.toggle('open')"><span>Semana ${wIdx+1}</span><span id="w-sum-${wIdx}" style="color:var(--text-sec)">0</span></div><div class="week-content" id="week-content-${wIdx}"></div>`;
             area.appendChild(acc);
+            
             const content = document.getElementById(`week-content-${wIdx}`);
             for(let i=0; i<7; i++) {
                 const curD = day + i - (wIdx === 0 ? startOffset : 0);
                 if(curD > 0 && curD <= totalDays) {
                     const isToday = hj.getFullYear() === state.year && hj.getMonth() === state.month && curD === hj.getDate();
                     const dAcc = document.createElement('div');
-                    dAcc.className = `day-accordion ${isToday ? 'open' : ''}`;
+                    dAcc.className = `day-accordion ${isToday ? 'open is-today' : ''}`;
                     dAcc.innerHTML = `<div class="day-header" onclick="this.parentElement.classList.toggle('open')"><span>Dia ${curD}</span><span class="day-total-${curD}" style="color:var(--primary)">0</span></div><div class="day-content">${buildTable(curD)}</div>`;
                     content.appendChild(dAcc);
+                    if(isToday) setTimeout(() => dAcc.scrollIntoView({behavior:'smooth', block:'center'}), 600);
                 }
             }
             day += (wIdx === 0 ? 7 - startOffset : 7); wIdx++;
@@ -181,20 +217,21 @@
     }
 
     function buildTable(d) {
-        if(!state.accounts || !state.accounts.length) return ``;
-        let h = `<table class="main-table"><thead><tr><th style="width:100px"></th>`;
+        if(!state.accounts || !state.accounts.length) return `<div style="padding:10px; font-size:0.7rem; color:var(--text-sec)">Nenhuma conta configurada.</div>`;
+        let h = `<table class="main-table"><thead><tr><th style="width:70px; background:var(--card);"></th>`;
         state.accounts.forEach((a, i) => {
-            const color = accColors[i % accColors.length];
+            const color = accColors[a.colorIdx || (i % accColors.length)];
             h += `<th>
                 <div class="acc-column-header" style="--acc-color:${color.hex}">
-                    <div class="acc-name" style="color:${color.hex}">${a.name}</div>
-                    <span class="acc-balance-large daily-acc-total-${d}-${i}">0</span>
-                    <span class="acc-day-gain">+<span class="ind-day-gain-${d}-${i}">0</span> hoje</span>
-                    <div class="acc-info-row"><span>Média Mês:</span><b class="ind-avg-month-${d}-${i}">0</b></div>
-                    <div class="acc-info-row"><span>Média Sem:</span><b class="ind-avg-week-${d}-${i}">0</b></div>
-                    <div class="acc-info-row"><span>Faltam:</span><b class="ind-missing-${d}-${i} text-danger">0</b></div>
-                    <div class="acc-info-row"><span>Previsão:</span><b class="ind-date-${d}-${i} text-success">--/--</b></div>
-                    <input type="text" inputmode="numeric" class="val-input inp-d-${d}" style="--acc-color:${color.hex}; --acc-color-rgb:${color.rgb}" data-key="${state.year}-${state.month}-${d}-resgate-${i}" onkeydown="handleNav(event, ${d})" onblur="commitValue(this)" placeholder="Resgatar">
+                    <div class="acc-name">${a.name}</div>
+                    <span class="acc-balance-total daily-acc-total-${d}-${i}">0</span>
+                    <input type="number" class="resgate-input-header inp-d-${d}" placeholder="Resgate" data-key="${state.year}-${state.month}-${d}-resgate-${i}" onblur="commitValue(this)">
+                    <div class="acc-stats-grid">
+                        <div class="acc-stat-item"><label>Hoje</label><span class="text-primary">+<span class="ind-day-gain-${d}-${i}">0</span></span></div>
+                        <div class="acc-stat-item"><label>Meta</label><span>${(Number(a.goal)||0).toLocaleString()}</span></div>
+                        <div class="acc-stat-item"><label>Méd. Mês</label><span class="ind-avg-month-${d}-${i}">0</span></div>
+                        <div class="acc-stat-item"><label>Proj.</label><span class="text-up ind-date-${d}-${i}">--/--</span></div>
+                    </div>
                 </div>
             </th>`;
         });
@@ -203,14 +240,34 @@
             h += `<tr><td colspan="${state.accounts.length+1}"><div class="group-bar">${g.name}</div></td></tr>`;
             if(g.tasks) g.tasks.forEach((t, ti) => {
                 h += `<tr><td class="label-col">${t}</td>`;
-                state.accounts.forEach((_, ai) => {
-                    const color = accColors[ai % accColors.length];
-                    h += `<td><input type="text" inputmode="numeric" class="val-input inp-d-${d}" style="--acc-color:${color.hex}; --acc-color-rgb:${color.rgb}" data-key="${state.year}-${state.month}-${d}-${g.id}-${ti}-${ai}" onkeydown="handleNav(event, ${d})" onblur="commitValue(this)"></td>`;
+                state.accounts.forEach((a, ai) => {
+                    const color = accColors[a.colorIdx || (ai % accColors.length)];
+                    h += `<td class="acc-td" style="background:${color.rgba}">
+                        <input type="number" class="val-input-table inp-d-${d}" style="--acc-color:${color.hex}" data-key="${state.year}-${state.month}-${d}-${g.id}-${ti}-${ai}" onkeydown="handleNav(event, ${d})" onblur="commitValue(this)">
+                    </td>`;
                 });
                 h += `</tr>`;
             });
         });
         return h + `</tbody></table>`;
+    }
+
+    function handleNav(e, d) {
+        const inputs = Array.from(document.querySelectorAll(`.inp-d-${d}`));
+        const idx = inputs.indexOf(e.target);
+        const cols = state.accounts.length;
+        let next = null;
+        if (e.key === "Enter" || e.key === "ArrowDown") { e.preventDefault(); next = inputs[idx + cols]; }
+        else if (e.key === "ArrowUp") { e.preventDefault(); next = inputs[idx - cols]; }
+        else if (e.key === "ArrowRight") next = inputs[idx + 1];
+        else if (e.key === "ArrowLeft") next = inputs[idx - 1];
+        if (next) { next.focus(); next.select(); } else if (e.key === "Enter") e.target.blur();
+    }
+
+    function commitValue(input) {
+        const key = input.dataset.key; if(!key) return;
+        const val = input.value;
+        if (val !== (state.values?.[key] || '')) db.ref(`enterprise_data/values/${key}`).set(val);
     }
 
     function calculateTotals() {
@@ -220,24 +277,8 @@
         
         let currentBalances = state.accounts.map(a => Number(a.initialPoints) || 0);
         let monthEarnedPerAcc = state.accounts.map(() => 0);
-        let weekEarnedPerAcc = state.accounts.map(() => 0);
-
-        // 1. Saldo Inicial (Meses Anteriores)
-        if (state.values) {
-            Object.keys(state.values).forEach(key => {
-                const p = key.split('-'); if (p.length < 3) return;
-                const y = parseInt(p[0]), m = parseInt(p[1]), accIdx = parseInt(p[p.length - 1]);
-                if (y < ty || (y === ty && m < tm)) {
-                    const val = Number(state.values[key]) || 0;
-                    if (key.includes('resgate')) currentBalances[accIdx] -= val; else currentBalances[accIdx] += val;
-                }
-            });
-        }
-
-        // 2. Processamento Diário do Mês Atual
-        let monthGlobalEarn = 0, monthGlobalRedeemed = 0, weekGlobalEarn = 0;
+        let monthGlobalEarn = 0, monthGlobalRedeemed = 0;
         const weeklySums = [];
-        const currentWeekIdx = Math.floor((hj.getDate() + startO - 1) / 7);
 
         for (let d = 1; d <= totalDaysInMonth; d++) {
             let dayGlobalGain = 0;
@@ -246,41 +287,38 @@
 
             state.accounts.forEach((acc, ai) => {
                 let dayAccGain = 0;
-                if(state.groups) state.groups.forEach(g => { 
-                    if(g.tasks) g.tasks.forEach((_, ti) => { dayAccGain += Number(state.values?.[`${ty}-${tm}-${d}-${g.id}-${ti}-${ai}`]) || 0; }); 
+                state.groups.forEach(g => { 
+                    if(g.tasks) g.tasks.forEach((_, ti) => { 
+                        dayAccGain += Number(state.values?.[`${ty}-${tm}-${d}-${g.id}-${ti}-${ai}`]) || 0; 
+                    }); 
                 });
-                const dayResgate = Number(state.values?.[`${ty}-${tm}-${d}-resgate-${ai}`]) || 0;
+                const dayRes = Number(state.values?.[`${ty}-${tm}-${d}-resgate-${ai}`]) || 0;
                 
-                // Acumula Saldo
-                currentBalances[ai] += (dayAccGain - dayResgate);
+                currentBalances[ai] += (dayAccGain - dayRes);
                 monthEarnedPerAcc[ai] += dayAccGain;
-                
-                // Estatísticas da Semana Atual
-                if (hj.getMonth() === tm && hj.getFullYear() === ty && wIdx === currentWeekIdx) {
-                    weekEarnedPerAcc[ai] += dayAccGain;
-                    weekGlobalEarn += dayAccGain;
-                }
-
-                // Injeção de Dados Diários na Tabela
-                document.querySelectorAll(`.daily-acc-total-${d}-${ai}`).forEach(e => e.innerText = Math.round(currentBalances[ai]).toLocaleString());
-                document.querySelectorAll(`.ind-day-gain-${d}-${ai}`).forEach(e => e.innerText = Math.round(dayAccGain).toLocaleString());
-                
-                // Médias (Injetadas em todos os dias para facilitar visualização)
-                const diasPassadosMes = Math.max(1, hj.getDate());
-                const diasPassadosSemana = Math.max(1, hj.getDay() === 0 ? 7 : hj.getDay()); // Considera segunda como dia 1
-                
-                document.querySelectorAll(`.ind-avg-month-${d}-${ai}`).forEach(e => e.innerText = Math.round(monthEarnedPerAcc[ai] / diasPassadosMes).toLocaleString());
-                document.querySelectorAll(`.ind-avg-week-${d}-${ai}`).forEach(e => e.innerText = Math.round(weekEarnedPerAcc[ai] / diasPassadosSemana).toLocaleString());
-
                 dayGlobalGain += dayAccGain;
                 monthGlobalEarn += dayAccGain;
-                monthGlobalRedeemed += dayResgate;
+                monthGlobalRedeemed += dayRes;
                 weeklySums[wIdx] += dayAccGain;
+
+                const daysPassed = Math.max(1, hj.getMonth() > tm ? totalDaysInMonth : hj.getDate());
+                const mediaMensal = monthEarnedPerAcc[ai] / daysPassed;
+                const missing = Math.max(0, (Number(acc.goal) || 0) - currentBalances[ai]);
+
+                let dateStr = "--/--";
+                if(mediaMensal > 0) {
+                    const dObj = new Date(); dObj.setDate(hj.getDate() + Math.ceil(missing / mediaMensal));
+                    dateStr = dObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+                }
+
+                document.querySelectorAll(`.daily-acc-total-${d}-${ai}`).forEach(e => e.innerText = Math.round(currentBalances[ai]).toLocaleString());
+                document.querySelectorAll(`.ind-day-gain-${d}-${ai}`).forEach(e => e.innerText = Math.round(dayAccGain).toLocaleString());
+                document.querySelectorAll(`.ind-avg-month-${d}-${ai}`).forEach(e => e.innerText = Math.round(mediaMensal).toLocaleString());
+                document.querySelectorAll(`.ind-date-${d}-${ai}`).forEach(e => e.innerText = dateStr);
             });
             document.querySelectorAll(`.day-total-${d}`).forEach(el => el.innerText = Math.round(dayGlobalGain).toLocaleString());
         }
 
-        // 3. Cabeçalhos de Semana e Totais Globais
         weeklySums.forEach((sum, idx) => { if(document.getElementById(`w-sum-${idx}`)) document.getElementById(`w-sum-${idx}`).innerText = Math.round(sum).toLocaleString(); });
 
         const gMeta = state.accounts.reduce((s, a) => s + (Number(a.goal) || 0), 0);
@@ -294,65 +332,61 @@
         document.getElementById('displayMeta').innerText = gMeta.toLocaleString();
         document.getElementById('projMissing').innerText = gFalta.toLocaleString();
 
-        // Previsão Global (Baseada na média global diária da semana atual)
-        if (weekGlobalEarn > 0) {
-            const diasParaMeta = Math.ceil(gFalta / (weekGlobalEarn / 7));
-            const dObj = new Date(); dObj.setDate(hj.getDate() + diasParaMeta);
-            document.getElementById('projDate').innerText = dObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+        // CÁLCULO DA PREVISÃO GLOBAL (Cabeçalho)
+        const daysPassedGlobal = Math.max(1, hj.getDate());
+        const globalDailyAvg = monthGlobalEarn / daysPassedGlobal;
+        if (globalDailyAvg > 0) {
+            const daysToGoal = Math.ceil(gFalta / globalDailyAvg);
+            const projection = new Date();
+            projection.setDate(hj.getDate() + daysToGoal);
+            document.getElementById('projDate').innerText = projection.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+        } else {
+            document.getElementById('projDate').innerText = "--/--";
         }
-
-        // Previsões e Faltas Individuais
-        state.accounts.forEach((acc, ai) => {
-            const missing = Math.max(0, (Number(acc.goal) || 0) - currentBalances[ai]);
-            const mediaSem = weekEarnedPerAcc[ai] / 7;
-            let dateStr = "--/--";
-            if(mediaSem > 0) {
-                const dObj = new Date(); dObj.setDate(hj.getDate() + Math.ceil(missing / mediaSem));
-                dateStr = dObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-            }
-            // Injeta faltas e datas em todos os acordeões do dia atual
-            document.querySelectorAll(`.ind-missing-${hj.getDate()}-${ai}`).forEach(el => el.innerText = Math.round(missing).toLocaleString());
-            document.querySelectorAll(`.ind-date-${hj.getDate()}-${ai}`).forEach(el => el.innerText = dateStr);
-        });
     }
 
     function updateInputsSilently() {
-        document.querySelectorAll('.val-input').forEach(inp => {
+        document.querySelectorAll('.val-input-table, .resgate-input-header').forEach(inp => {
             const key = inp.dataset.key; if(document.activeElement !== inp && key) inp.value = state.values?.[key] || '';
         });
     }
 
-    function handleNav(e, d) {
-        const inputs = Array.from(document.querySelectorAll(`.inp-d-${d}`));
-        const idx = inputs.indexOf(e.target); const cols = (state.accounts || []).length;
-        let next = null;
-        if (e.key === "Enter" || e.key === "ArrowDown") { e.preventDefault(); next = inputs[idx + cols]; }
-        else if (e.key === "ArrowUp") { e.preventDefault(); next = inputs[idx - cols]; }
-        else if (e.key === "ArrowRight") next = inputs[idx + 1];
-        else if (e.key === "ArrowLeft") next = inputs[idx - 1];
-        if (next) { setTimeout(() => { next.focus(); next.select(); }, 10); } else if (e.key === "Enter") e.target.blur();
-    }
-
-    function commitValue(input) {
-        const key = input.dataset.key; if(!key) return;
-        if (input.value !== (state.values?.[key] || '')) db.ref(`enterprise_data/values/${key}`).set(input.value);
-    }
-
-    function toggleAdmin() { tempState = JSON.parse(JSON.stringify(state)); document.getElementById('adminPanel').style.display='block'; renderAdmin(); }
-    function closeModal(id) { document.getElementById(id).style.display='none'; }
+    let tempState = {};
+    function toggleAdmin() { tempState = JSON.parse(JSON.stringify(state)); document.getElementById('commonOverlay').style.display='block'; document.getElementById('adminPanel').style.display='block'; renderAdmin(); }
+    
     function renderAdmin() {
         document.getElementById('accAdmin').innerHTML = (tempState.accounts || []).map((a, i) => `
             <div style="margin-bottom:15px; padding:15px; border:1px solid var(--border); border-radius:12px; background: rgba(255,255,255,0.02);">
-                <input class="val-input" value="${a.name}" oninput="tempState.accounts[${i}].name=this.value" style="width:100%; text-align:left; padding:12px; height:45px; margin-bottom:10px;">
-                <div style="display:flex; gap:10px;">
-                    <div style="flex:1"><label style="font-size:0.5rem; color:var(--text-sec);">PONTOS INICIAIS</label><input type="number" class="val-input" value="${a.initialPoints}" oninput="tempState.accounts[${i}].initialPoints=this.value"></div>
-                    <div style="flex:1"><label style="font-size:0.5rem; color:var(--text-sec);">META FINAL</label><input type="number" class="val-input" value="${a.goal}" oninput="tempState.accounts[${i}].goal=this.value"></div>
+                <input class="val-input-table" value="${a.name}" oninput="tempState.accounts[${i}].name=this.value" style="text-align:left; padding:12px; height:45px; margin-bottom:10px;">
+                <div class="color-picker">
+                    ${accColors.map((c, ci) => `<div class="color-circle ${a.colorIdx==ci?'active':''}" style="background:${c.hex}" onclick="tempState.accounts[${i}].colorIdx=${ci}; renderAdmin()"></div>`).join('')}
                 </div>
-                <button onclick="tempState.accounts.splice(${i},1); renderAdmin()" style="margin-top:10px; color:var(--danger); background:none; border:none; font-size:0.7rem; font-weight:700; cursor:pointer;">REMOVER</button>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <div style="flex:1"><label style="font-size:0.5rem;">PONTOS INICIAIS</label><input type="number" class="val-input-table" value="${a.initialPoints}" oninput="tempState.accounts[${i}].initialPoints=this.value"></div>
+                    <div style="flex:1"><label style="font-size:0.5rem;">META FINAL</label><input type="number" class="val-input-table" value="${a.goal}" oninput="tempState.accounts[${i}].goal=this.value"></div>
+                </div>
+                <button onclick="tempState.accounts.splice(${i},1); renderAdmin()" style="margin-top:10px; color:var(--danger); background:none; border:none; font-size:0.7rem; font-weight:700; cursor:pointer;">REMOVER CONTA</button>
+            </div>`).join('');
+
+        document.getElementById('groupAdmin').innerHTML = (tempState.groups || []).map((g, gi) => `
+            <div style="margin-bottom:15px; padding:15px; border:1px solid var(--border); border-radius:12px; background: rgba(255,255,255,0.02);">
+                <input class="val-input-table" value="${g.name}" oninput="tempState.groups[${gi}].name=this.value" style="text-align:left; color:var(--primary); font-weight:800; margin-bottom:10px;">
+                <div id="tasks-${gi}">
+                    ${(g.tasks || []).map((t, ti) => `
+                        <div class="task-item">
+                            <input class="val-input-table" value="${t}" oninput="tempState.groups[gi].tasks[ti]=this.value" style="text-align:left; font-size:0.7rem;">
+                            <button onclick="tempState.groups[${gi}].tasks.splice(${ti},1); renderAdmin()" style="color:var(--danger); background:none; border:none; cursor:pointer;">✕</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="tempState.groups[${gi}].tasks.push('Nova Tarefa'); renderAdmin()" style="margin-top:10px; font-size:0.6rem; color:var(--success); background:none; border:none; cursor:pointer; font-weight:700;">+ TAREFA</button>
+                <button onclick="tempState.groups.splice(${gi},1); renderAdmin()" style="margin-left:15px; font-size:0.6rem; color:var(--danger); background:none; border:none; cursor:pointer; font-weight:700;">REMOVER GRUPO</button>
             </div>`).join('');
     }
-    function commitChanges() { db.ref('enterprise_data').set(tempState).then(()=>closeModal('adminPanel')); }
-    function tempAddAcc() { if(!tempState.accounts) tempState.accounts = []; tempState.accounts.push({name: "Nova Conta", initialPoints:0, goal:0}); renderAdmin(); }
+
+    function tempAddAcc() { if(!tempState.accounts) tempState.accounts = []; tempState.accounts.push({name: "Nova Conta", initialPoints:0, goal:0, colorIdx:0}); renderAdmin(); }
+    function tempAddGroup() { if(!tempState.groups) tempState.groups = []; tempState.groups.push({id: 'g'+Date.now(), name: "Novo Grupo", tasks: ["Tarefa 1"]}); renderAdmin(); }
+    function commitChanges() { db.ref('enterprise_data').set(tempState).then(()=>closeAllModals()); }
 
     if (localStorage.getItem('rewards_auth') === 'true') loginSuccess();
 </script>
